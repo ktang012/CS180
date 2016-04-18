@@ -1,0 +1,16 @@
+{
+  "name": "Chrome Extension",
+  "description": "....",
+  "version": "0",
+  "permissions": [
+    "tabs"
+  ],
+  "browser_action": {
+      "default_title": "New Tab",
+      "default_icon": ""
+  },
+  "chrome_url_overrides" : {
+    "newtab": ""
+  },
+  "manifest_version": 2
+}
