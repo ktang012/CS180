@@ -1,16 +1,18 @@
 {
-  "name": "Chrome Extension",
-  "description": "....",
-  "version": "0",
+  "name": "CS180 Extension",
+  "description": "Productivity extension",
+  "version": "0.1",
   "permissions": [
-    "tabs"
+    "alarms", 
+    "geolocation",
+    "identity"
   ],
   "browser_action": {
       "default_title": "New Tab",
-      "default_icon": ""
+      "default_icon": "src/img/icon.png"
   },
   "chrome_url_overrides" : {
-    "newtab": ""
+    "newtab": "src/newtab.html"
   },
   "manifest_version": 2
 }
