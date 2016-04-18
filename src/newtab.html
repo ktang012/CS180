@@ -56,8 +56,8 @@
         </div>
         <div id="top-right">
             <div id="weather" style= "opacity: 0.5;">
-                <p> [Location] </p>
-                <p> [Icon + Temp] [ ] </p>
+                <p id="weather_location"> [Location] </p>
+                <p id="temperature"> [Icon + Temp] [ ] </p>
             </div>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -85,12 +85,14 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
 
-    <!-- Menu Toggle Script -->
+    <!-- Menu Toggle Script
     <script>
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
-    });
+    }); -->
+    <script src="js/jquery.simpleWeather.min.js"></script>
+    <script src="js/weather.js"></script>
     </script>
 
 </body>

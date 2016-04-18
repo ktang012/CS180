@@ -3,9 +3,10 @@
   "description": "Productivity extension",
   "version": "0.1",
   "permissions": [
-    "alarms", 
+    "alarms",
     "geolocation",
-    "identity"
+    "identity",
+    "http://cs180.no-ip.info/",
   ],
   "browser_action": {
       "default_title": "New Tab",
@@ -14,5 +15,18 @@
   "chrome_url_overrides" : {
     "newtab": "src/newtab.html"
   },
+  "background": {
+    "scripts": ["jquery.simpleWeather.min.js"]
+  
+  },
+  "content_security_policy": "script-src 'self' https://query.yahooapis.com; object-src 'self'",
+  "content_scripts": [
+    {
+    
+    
+    
+    
+    }
+  ],
   "manifest_version": 2
 }
