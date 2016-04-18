@@ -8,6 +8,7 @@ else {
 $(document).ready(function() {
     getWeather();
     var weatherInterval = setInterval(getWeather, 600000);
+
 });
 
 function getWeather() {
@@ -26,10 +27,11 @@ function loadWeather(location, woeid) {
       html += '<ul><li>'+weather.city+', '+weather.region+'</li>';
       html += '<li class="currently">'+weather.currently+'</li>';
       html += '<li>'+weather.alt.temp+'&deg;C</li></ul>';  
-      
+
       $("#weather").html(html);
     },
     error: function(error) {
+      console.log("fail");
       $("#weather").html('<p>'+error+'</p>');
     }
   });
