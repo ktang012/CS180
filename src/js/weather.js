@@ -31,36 +31,34 @@ function loadSettings() {
             setWeather();
         }
         else {
-            console.log("Error fetching weather metrics");     
+            setWeather(); // load default
         }
     });
 }
 
 function setWeather() {
     var data = { metric: ''};
+    var unit = '';
     if ($('#weather_onoff').prop('checked')) {
         data.metric = 'fahrenheit';
-        chrome.storage.sync.set(data, function() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                loadFahrenheit(position.coords.latitude+','+position.coords.longitude);
-            });
-        });
+        unit = 'f';
     }
     else if (!($('#weather_onoff').prop('checked'))) {
         data.metric = 'celsius';
-        chrome.storage.sync.set(data, function() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                loadCelsius(position.coords.latitude+','+position.coords.longitude);
-            });
+        unit = 'c';
+    }
+    chrome.storage.sync.set(data, function() {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            loadWeather(position.coords.latitude+','+position.coords.longitude, null, unit);
         });
-    }
+    });
 }
 
-function loadFahrenheit(location, woeid) {
+function loadWeather(location, woeid, unit) {
   $.simpleWeather({
     location: location,
     woeid: woeid,
-    unit: 'f',
+    unit: unit,
     success: function(weather) {
         var html = '<h2>' + weather.temp + '&deg;' + weather.units.temp;
         html += '<img src="' + weather.thumbnail + '"></img></h2>';
@@ -73,19 +71,7 @@ function loadFahrenheit(location, woeid) {
   });
 }
 
-function loadCelsius(location, woeid) {
-  $.simpleWeather({
-    location: location,
-    woeid: woeid,
-    unit: 'c',
-    success: function(weather) {
-        var html = '<h2>' + weather.temp + '&deg;' + weather.units.temp;
-        html += '<img src="' + weather.thumbnail + '"></img></h2>';
-        $('#weather_display').html(html);
-    },
-    error: function(error) {
-      console.log("Failed to load weather");
-      $('#weather').html('<p>'+error+'</p>');
-    }
-  });
+function setLocation() {
+
+
 }
