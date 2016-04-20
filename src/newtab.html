@@ -16,6 +16,9 @@
 
     <!-- Custom CSS -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
+    
+    <!-- Switch CSS -->
+    <link href="css/switch.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -56,7 +59,15 @@
         </div>
         <div id="top-right">
             <div id="weather" style= "opacity: 0.5;">
-            
+                <h2 id="weather_display"><img src=""> </img></h2>
+                <p id="weather_location"></p>
+                <div class="onoffswitch">
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="weather_onoff" checked>
+                    <label class="onoffswitch-label" for="weather_onoff">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
             </div>
         </div>
         <!-- /#sidebar-wrapper -->
