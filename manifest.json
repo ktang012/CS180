@@ -18,13 +18,5 @@
     "newtab": "src/newtab.html"
   },
   "content_security_policy": "script-src https://*.yahooapis.com 'unsafe-eval'; object-src 'self'",
-    
-  "content_scripts": [
-    {
-        "js": ["src/js/weather.js", "src/js/jquery.simpleWeather.min.js"],
-        "matches": ["*://*/*"],
-        "run_at": "document_start"
-    }
-  ],
   "manifest_version": 2
 }
