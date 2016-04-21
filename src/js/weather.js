@@ -1,5 +1,6 @@
 /*
-    DO NOT USE 'location'
+    Plugin used: http://simpleweatherjs.com/
+    Notes: DO NOT USE 'location'
 */
 
 $(document).ready(function () {
@@ -7,15 +8,18 @@ $(document).ready(function () {
     loadSettings();
     
     $('#weather_onoff').change(function() {
-        data = $('#weather_input_location').val();
-        setWeather(data);
+        chrome.storage.sync.get('set_location', function(data) {
+            var result = data.set_location;
+            setWeather(result);
+        });
     });
     $('#weather_input_location').on('change keyup paste', function() {
-        data = $('#weather_input_location').val();
+        var data = $('#weather_input_location').val();
         if (data !== '' && isValidLocation(data)) {
             setWeather(data);
         }
         else {
+        
         }
     });
 });
