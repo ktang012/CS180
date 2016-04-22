@@ -20,10 +20,6 @@ $(document).ready(function () {
                 setWeather(data);
             }
         }
-        else {
-            console.log("lol");
-
-        }
     });
 });
 
