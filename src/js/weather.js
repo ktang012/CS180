@@ -13,12 +13,15 @@ $(document).ready(function () {
             setWeather(result);
         });
     });
-    $('#weather_input_location').on('change keyup paste', function() {
-        var data = $('#weather_input_location').val();
-        if (data !== '' && isValidLocation(data)) {
-            setWeather(data);
+    $('#weather_input_location').keypress(function(pressedKey) {
+        if (pressedKey.which === 13) {
+            var data = $('#weather_input_location').val();
+            if (data !== '' && isValidLocation(data)) {
+                setWeather(data);
+            }
         }
         else {
+            console.log("lol");
 
         }
     });
