@@ -4,9 +4,9 @@
 */
 
 $(document).ready(function () {
-    verifyGeolocation();  
+    verifyGeolocation();
     loadSettings();
-    
+
     $('#weather_onoff').change(function() {
         chrome.storage.sync.get('set_location', function(data) {
             var result = data.set_location;
@@ -19,7 +19,7 @@ $(document).ready(function () {
             setWeather(data);
         }
         else {
-        
+
         }
     });
 });
@@ -48,7 +48,7 @@ function loadSettings() {
             else {
                 console.log("Cannot load metric settings.");
             }
-            setWeather(setLocation);    
+            setWeather(setLocation);
         });
     });
 }
@@ -64,7 +64,7 @@ function setWeather(setLocation) {
         data.metric = 'celsius';
         unit = 'c';
     }
-    
+
     if (setLocation === undefined || setLocation === null) {
         chrome.storage.sync.set(data, function() {
             navigator.geolocation.getCurrentPosition(function(position) {
