@@ -16,7 +16,10 @@ $(document).ready(function () {
     $('#weather_input_location').keypress(function(pressedKey) {
         if (pressedKey.which === 13) {
             var data = $('#weather_input_location').val();
-            if (data !== '' && isValidLocation(data)) {
+            if (data.toUpperCase() === 'DEFAULT') {
+                setWeather(null);
+            }
+            else if (data !== '' && isValidLocation(data)) {
                 setWeather(data);
             }
         }
