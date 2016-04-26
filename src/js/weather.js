@@ -18,6 +18,8 @@ $(document).ready(function () {
             var data = $('#weather_input_location').val();
             if (data.toUpperCase() === 'DEFAULT') {
                 setWeather(null);
+                var data = { set_location: null};
+                chrome.storage.sync.set(data);
             }
             else if (data !== '' && isValidLocation(data)) {
                 setWeather(data);
