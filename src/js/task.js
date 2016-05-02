@@ -112,13 +112,15 @@ $( document ).ready (function(){
 function save_task() {
     chrome.identity.getProfileUserInfo(function(token) {
         if (token.email === '') {
-            console.log('lol');
             return;
         }
         else {
 	        var input, task, year, month, day, date;
 		    input=document.getElementById("form1") ;
 		    task=input.elements["task"].value;
+		    if (task === '') {
+		        return;
+		    }
 		    year=input.elements["year"].value;
 		    month=input.elements["month"].value;
 		    day=input.elements["day"].value;
