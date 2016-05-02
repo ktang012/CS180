@@ -102,8 +102,8 @@ $( document ).ready (function(){
 						});
 					}
 					$('#tasks').append ('<li><ul>deadline: '  + tasks.deadline + '<ul/></li>');
-					$('#tasks').append ('<li></li>');				
-				});	
+					$('#tasks').append ('<li></li>');
+				});
 			}
 		});
 	});
@@ -111,7 +111,8 @@ $( document ).ready (function(){
 
 function save_task() {
     chrome.identity.getProfileUserInfo(function(token) {
-        if (toke.email === '') {
+        if (token.email === '') {
+            console.log('lol');
             return;
         }
         else {
@@ -143,4 +144,4 @@ function save_task() {
 };
 
 
-	
+
