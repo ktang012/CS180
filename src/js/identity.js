@@ -1,7 +1,6 @@
-$( document ).ready(function(){
-	chrome.identity.getProfileUserInfo(function(token){
-		console.log(token);
-		if (token.email === ''){
+$( document ).ready(function() {
+	chrome.identity.getProfileUserInfo(function(token) {
+		if (token.email === '') {
 			return;		
 		}
 		var login = {
@@ -11,8 +10,8 @@ $( document ).ready(function(){
 			type: 'POST',
 			url: 'http://cs180.no-ip.info/CreateUser',
 			data: login,
-			success: function(login){
-				$login.append('<li>username: ' + login.username + '</li>');			
+			success: function(data) {
+					// console.log(data);
 			},
 			error: function() {
 				alert('error username');
