@@ -3,9 +3,12 @@
   "description": "Productivity extension",
   "version": "0.1",
   "permissions": [
-    "alarms", 
+    "alarms",
     "geolocation",
-    "identity"
+    "identity",
+    "storage",
+    "http://cs180.no-ip.info/",
+    "https://*.yahooapis.com/*"
   ],
   "browser_action": {
       "default_title": "New Tab",
@@ -14,5 +17,6 @@
   "chrome_url_overrides" : {
     "newtab": "src/newtab.html"
   },
+  "content_security_policy": "script-src https://*.yahooapis.com 'unsafe-eval'; object-src 'self'",
   "manifest_version": 2
 }

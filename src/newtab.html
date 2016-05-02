@@ -16,6 +16,9 @@
 
     <!-- Custom CSS -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
+    
+    <!-- Switch CSS -->
+    <link href="css/switch.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -56,8 +59,19 @@
         </div>
         <div id="top-right">
             <div id="weather" style= "opacity: 0.5;">
-                <p> [Location] </p>
-                <p> [Icon + Temp] [ ] </p>
+                <h2 id="weather_display"><img src=""> </img></h2>
+                <p id="weather_location"></p>
+                <div class="onoffswitch">
+                    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="weather_onoff" checked>
+                    <label class="onoffswitch-label" for="weather_onoff">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
+                <div class="form-group" id="weather_location">
+                    <label for="location">Location:</label>
+                    <input type="text" class="form-control" id="weather_input_location">
+                </div>
             </div>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -85,13 +99,14 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
 
-    <!-- Menu Toggle Script -->
+    <!-- Menu Toggle Script
     <script>
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
-    });
-    </script>
+    }); -->
+    <script src="js/jquery.simpleWeather.min.js"></script>
+    <script src="js/weather.js"></script>
 
 </body>
 
