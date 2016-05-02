@@ -1,3 +1,3 @@
 # Chrome Extension Name
 
-Documentation TBA
+Look at development branch for progress
