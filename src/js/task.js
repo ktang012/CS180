@@ -111,29 +111,34 @@ $( document ).ready (function(){
 
 function save_task() {
     chrome.identity.getProfileUserInfo(function(token) {
-	    var input, task, year, month, day, date;
-		input=document.getElementById("form1") ;
-		task=input.elements["task"].value;
-		year=input.elements["year"].value;
-		month=input.elements["month"].value;
-		day=input.elements["day"].value;
-		date= year + "-" + month + "-" + day;
-		var task = {
-	        username: token.email,
-			deadline: date,
-			description: task
-		};
-		$.ajax({
-	        type: 'POST',
-			url: 'http://cs180.no-ip.info/AddTask',
-			data: task,
-			success: function(data) {
-			    location.reload();
-			},
-			error: function() {
-		        alert('error task');
-			}
-		});
+        if (toke.email === '') {
+            return;
+        }
+        else {
+	        var input, task, year, month, day, date;
+		    input=document.getElementById("form1") ;
+		    task=input.elements["task"].value;
+		    year=input.elements["year"].value;
+		    month=input.elements["month"].value;
+		    day=input.elements["day"].value;
+		    date= year + "-" + month + "-" + day;
+		    var task = {
+	            username: token.email,
+			    deadline: date,
+			    description: task
+		    };
+		    $.ajax({
+	            type: 'POST',
+			    url: 'http://cs180.no-ip.info/AddTask',
+			    data: task,
+			    success: function(data) {
+			        location.reload();
+			    },
+			    error: function() {
+		            alert('error task');
+			    }
+		    });
+		}
     });
 };
 
