@@ -26,7 +26,7 @@ $( document ).ready (function(){
 								success: function(cross) {
 								    location.reload();
 								    // This does not cross it out...
-									$cross.append('<li>taskid: ' + cross.taskid + ', status: 1</li>');
+									//$('#cross').append('<li>taskid: ' + cross.taskid + ', status: 1</li>');
 								},
 								error: function() {
 									alert('error task');
@@ -70,8 +70,9 @@ $( document ).ready (function(){
 								url: 'http://cs180.no-ip.info/CheckTask',
 								data: cross,
 								success: function(cross) {
+								    location.reload();
 								    // This does not cross it out...
-									$cross.append('<li>taskid: ' + cross.taskid + ', status: 0</li>');
+									// $cross.append('<li>taskid: ' + cross.taskid + ', status: 0</li>');
 								},
 								error: function() {
 									alert('error task');
