@@ -20,6 +20,12 @@
   "chrome_url_overrides" : {
     "newtab": "src/newtab.html"
   },
+  "content_scripts": [
+    {
+        "matches": ["*://*/*"],
+        "js": ["src/js/jquery-latest.min.js", "src/js/tracker.js"]
+    }
+  ],
   "background" : {
 	  "scripts" : ["google_api/base64.js", "google_api/background.js"]
   },
