@@ -9,7 +9,7 @@
         The siteId is used to perform validation with SiteTimeHistory, more on this
         later. May just drop this for domainName.
         
-        The domaiNname is the domain name of the site to be tracked/blocked.
+        The domainName is the domain name of the site to be tracked/blocked.
         
         dailyTime is the elapsed time spent on a site, in minutes, for the day.
         
@@ -32,43 +32,59 @@
         the site will be blocked when dailyTime === timeCap.
         
     ListedSite objects in MySQL:
-        
+        A user can multiple or none ListedSite objects. The objects will be identified by
+        their owner, and domain name. In addition, 
     
 */
 
+
+// Cannot call identity without referencing it properly... since it's a content script
 $(document).ready(function() {
-    console.log("Currently on: ", document.domain);
-    var listedSite = getListedSite();
-    if (!(listedSite === undefined || listedSite === null)) {
-        setInterval(function() {
-            monitorSite(listedSite);
-            }, 500);
-        listedSite.checkTimeCap();
-    }
+    chrome.storage.sync.get("username", function(data) {
+        var login = data.username;
+        
+        console.log(login, "is currently on:", document.domain);
+        
+        var listedSite = getListedSite();
+        if (!(listedSite === undefined || listedSite === null)) {
+            console.log("Begin monitoring site!");
+            setInterval(function() {
+                monitorSite(listedSite);
+            }, 500); // Realistically would be every minute (60000 ms)
+            listedSite.checkTimeCap();
+        }
+    });
 });
 
 // Called every minute to update time on site and updating info in the database
+// Currently just testing blocking and tracking without API calls
 function monitorSite(site) {
     site.checkTimeCap();
     if (site.dailyTime < site.timeCap) {
         // Can update info
+        site.dailyTime += 1;
     }
 }
 
 // How to block site?
+// Currently redirects you to facebook if you exceed your time
 function blockSite() {
-    console.log("BLOCKED SITE");
-
+    console.log("BLOCKING SITE");
+    window.location.replace("https://www.facebook.com");
 }
 
 // Asks the server to verify if the site we're on is a listed site for the user
 function getListedSite() {
     var currentDomain = document.domain;
-    
     // Send ajax(currentDomain) ==> return (ListedSite object or nothing)
     
-    var testSite = new ListedSite(1, "www.reddit.com", 25, 50, true, 30);
-    return testSite;
+    if (currentDomain === "www.reddit.com") {
+        var testSite = new ListedSite(1, "www.reddit.com", 25, 50, true, 30);
+        return testSite;
+    }
+    else {
+        return null;
+    }
 }
 
 function ListedSite(siteId, domainName, dailyTime, weeklyTime, isBlocked, timeCap) {
