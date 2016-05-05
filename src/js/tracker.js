@@ -6,14 +6,11 @@
         A ListedSite object contains all the information needed to monitor
         a site the user has listed.
         
-        The siteId is used to perform validation with SiteTimeHistory, more on this
-        later. May just drop this for domainName.
+        owner is the user that owns the ListedSite.
         
-        The domainName is the domain name of the site to be tracked/blocked.
+        domainName is the domain name of the site to be tracked/blocked.
         
         dailyTime is the elapsed time spent on a site, in minutes, for the day.
-        
-        weeklyTime is the elapsed time spent on a site, in minutes, for the week.
         
         isBlocked distinguished blocked sites from tracked sites. We block blocked sites.
         
@@ -28,40 +25,56 @@
     Monitoring the listed site:
         Every minute we will update our fields accordingly and then sending a
         request to the server to do the same. If the request is NOT successful, we
-        will not "commit" the changes on our client. If a site is a blocked site,
-        the site will be blocked when dailyTime === timeCap.
+        will not keep any changes on the changes on our client. If a site is a blocked site,
+        the site will be blocked when dailyTime >= timeCap.
         
     ListedSite objects in MySQL:
-        A user can multiple or none ListedSite objects. The objects will be identified by
-        their owner, and domain name. In addition, 
+        A user can own multiple or none ListedSite objects. The objects will be identified by
+        their owner, and domain name. Each ListedSite object is associated with seven
+        SiteTimeHistory. 
     
 */
 
 
-// Cannot call identity without referencing it properly... since it's a content script
+// Need to configure apache server to have SSL for secure endpoints
+// to support HTTPS sites
 $(document).ready(function() {
     chrome.storage.sync.get("username", function(data) {
-        var login = data.username;
-        
-        console.log(login, "is currently on:", document.domain);
-        
-        var listedSite = getListedSite();
-        if (!(listedSite === undefined || listedSite === null)) {
-            console.log("Begin monitoring site!");
-            setInterval(function() {
-                monitorSite(listedSite);
-            }, 500); // Realistically would be every minute (60000 ms)
-            listedSite.checkTimeCap();
-        }
+        var user = { username: data.username,
+                     domainName: document.domain };
+        console.log(user.username, "is on", user.domainName);
+        $.ajax({
+            type: 'GET',
+            url: 'http://cs180.no-ip.info/ListedSite/GetAListedSite',
+            success: function(site) {
+                var listedSite = new ListedSite(site.owner, site.domainName, 
+                                                site.dailyTime, site.isBlocked, 
+                                                site.timeCap);
+                if (!(listedSite === undefined || listedSite === null)) {
+                    console.log("Begin monitoring", user.domainName);
+                    setInterval(function() {
+                        monitorSite(listedSite, user.username);
+                    }, 500);
+                    listedSite.checkTimeCap();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log("NOW YOU FUCKED UP");
+                console.log(textStatus, errorThrown);
+            }
+       });
     });
 });
 
 // Called every minute to update time on site and updating info in the database
 // Currently just testing blocking and tracking without API calls
-function monitorSite(site) {
+function monitorSite(site, login) {
     site.checkTimeCap();
     if (site.dailyTime < site.timeCap) {
-        // Can update info
+        
+
+        
+        
         site.dailyTime += 1;
     }
 }
@@ -73,25 +86,10 @@ function blockSite() {
     window.location.replace("https://www.facebook.com");
 }
 
-// Asks the server to verify if the site we're on is a listed site for the user
-function getListedSite() {
-    var currentDomain = document.domain;
-    // Send ajax(currentDomain) ==> return (ListedSite object or nothing)
-    
-    if (currentDomain === "www.reddit.com") {
-        var testSite = new ListedSite(1, "www.reddit.com", 25, 50, true, 30);
-        return testSite;
-    }
-    else {
-        return null;
-    }
-}
-
-function ListedSite(siteId, domainName, dailyTime, weeklyTime, isBlocked, timeCap) {
-    this.siteId = siteId;
+function ListedSite(owner, domainName, dailyTime, isBlocked, timeCap) {
+    this.owner = owner;
     this.domainName = domainName;
     this.dailyTime = dailyTime;
-    this.weeklyTime = weeklyTime;
     this.isBlocked = isBlocked;
     this.timeCap = timeCap;
     
@@ -102,7 +100,7 @@ function ListedSite(siteId, domainName, dailyTime, weeklyTime, isBlocked, timeCa
     };
 }
 
-function SiteTimeHistory(siteId, weekPeriodTime) {
+function SiteTimeHistory(owner, domainName, weekPeriodTime) {
 
 
 }
