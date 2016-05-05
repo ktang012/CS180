@@ -46,20 +46,20 @@ $(document).ready(function() {
         $.ajax({
             type: 'GET',
             url: 'http://cs180.no-ip.info/ListedSite/GetAListedSite',
+            data: user,
             success: function(site) {
                 var listedSite = new ListedSite(site.owner, site.domainName, 
                                                 site.dailyTime, site.isBlocked, 
                                                 site.timeCap);
-                if (!(listedSite === undefined || listedSite === null)) {
-                    console.log("Begin monitoring", user.domainName);
+                if (!(listedSite.domainName === undefined || listedSite.owner === undefined)) {
+                    console.log("Begin monitoring", listedSite.domainName);
                     setInterval(function() {
-                        monitorSite(listedSite, user.username);
+                        monitorSite(listedSite);
                     }, 500);
                     listedSite.checkTimeCap();
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                console.log("NOW YOU FUCKED UP");
                 console.log(textStatus, errorThrown);
             }
        });
@@ -68,14 +68,20 @@ $(document).ready(function() {
 
 // Called every minute to update time on site and updating info in the database
 // Currently just testing blocking and tracking without API calls
-function monitorSite(site, login) {
+function monitorSite(site) {
     site.checkTimeCap();
     if (site.dailyTime < site.timeCap) {
-        
-
-        
-        
-        site.dailyTime += 1;
+        $.ajax({
+            type: 'PUT',
+            url: 'http://cs180.no-ip.info/ListedSite/IncrementAListedSite',
+            data: site,
+            success: function(updatedSite) {
+                site.dailyTime = updatedSite.dailyTime;
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        });
     }
 }
 

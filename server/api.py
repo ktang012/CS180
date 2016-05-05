@@ -15,8 +15,6 @@ app.config['MYSQL_USE_UNICODE'] = 'True'
 mysql.init_app(app)
 
 class CreateUser(Resource):
-    def get(self):
-        return { 'message': 'HELLO WORLD' }
     def post(self):
         try:
             parser = reqparse.RequestParser()
@@ -181,14 +179,10 @@ class GetAListedSite(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
-# Note: This request ensures that the data is consistent with the database
-# It will only increment dailyTime if the client's dailyTime is the same
-# If it returns successfully (not a None object), it will return the
-# incremented dailyTime to be used to update your ListedSite object.
-# Otherwise the request should be treated as a failure and the client-side
-# dailyTime should not be changed.
+# Note: This request ensures that the sent data is consistent with the database
+# It will only update the server's dailyTime == client's dailyTime
 class IncrementAListedSite(Resource):
-    def put(self):
+    def post(self):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument('username', type=str, help='Owner of listedsite')
@@ -201,19 +195,24 @@ class IncrementAListedSite(Resource):
             _dailyTime = args['dailyTime']
 
             conn = mysql.connect()
+
             cursor = conn.cursor()
             cursor.callproc('incrementAListedSite', (_username, _domainName, _dailyTime))
+            conn.commit()
+            cursor.close()
+
+            # Needs a new cursor to execute another procedure
+            cursor = conn.cursor()
+            cursor.callproc('getAListedSite', (_username, _domainName))
             data = cursor.fetchone()
 
-            if data is None or data[2] == _dailyTime:
-                return { 'error': 'Failed to update time, check your dailyTime' }
-            else:
-                site = { 'owner': data[0],
-                         'domainName': data[1],
-                         'dailyTime': data[2],
-                         'isBlocked': data[3],
-                         'timeCap': data[4] }
-                return site
+            site = { 'owner': data[0],
+                     'domainName': data[1],
+                     'dailyTime': data[2],
+                     'isBlocked': data[3],
+                     'timeCap': data[4] }
+
+            return site
 
         except Exception as e:
             return { 'error': str(e) }
