@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 from flask.ext.mysql import MySQL
-import db_info # Database login information
+import db_info
 
 app = Flask(__name__)
 api = Api(app)
@@ -15,6 +15,8 @@ app.config['MYSQL_USE_UNICODE'] = 'True'
 mysql.init_app(app)
 
 class CreateUser(Resource):
+    def get(self):
+        return { 'message': 'HELLO WORLD' }
     def post(self):
         try:
             parser = reqparse.RequestParser()
@@ -152,12 +154,79 @@ class GetTask(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
+class GetAListedSite(Resource):
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of listedsite')
+            parser.add_argument('domainName', type=str, help='Current domain of user')
+            args = parser.parse_args()
+
+            _username = args['username']
+            _domainName = args['domainName']
+
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.callproc('getAListedSite', (_username, _domainName))
+            data = cursor.fetchone()
+
+            site = { 'owner': data[0],
+                     'domainName': data[1],
+                     'dailyTime': data[2],
+                     'isBlocked': data[3],
+                     'timeCap': data[4] }
+
+            return site
+
+        except Exception as e:
+            return { 'error': str(e) }
+
+# Note: This request ensures that the data is consistent with the database
+# It will only increment dailyTime if the client's dailyTime is the same
+# If it returns successfully (not a None object), it will return the
+# incremented dailyTime to be used to update your ListedSite object.
+# Otherwise the request should be treated as a failure and the client-side
+# dailyTime should not be changed.
+class IncrementAListedSite(Resource):
+    def put(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of listedsite')
+            parser.add_argument('domainName', type=str, help='Current domain of user')
+            parser.add_argument('dailyTime', type=int, help='Time spent today')
+            args = parser.parse_args()
+
+            _username = args['username']
+            _domainName = args['domainName']
+            _dailyTime = args['dailyTime']
+
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.callproc('incrementAListedSite', (_username, _domainName, _dailyTime))
+            data = cursor.fetchone()
+
+            if data is None or data[2] == _dailyTime:
+                return { 'error': 'Failed to update time, check your dailyTime' }
+            else:
+                site = { 'owner': data[0],
+                         'domainName': data[1],
+                         'dailyTime': data[2],
+                         'isBlocked': data[3],
+                         'timeCap': data[4] }
+                return site
+
+        except Exception as e:
+            return { 'error': str(e) }
+
 
 api.add_resource(CreateUser, '/CreateUser')
 api.add_resource(AddTask, '/AddTask')
 api.add_resource(DeleteTask, '/DeleteTask')
 api.add_resource(CheckTask, '/CheckTask')
 api.add_resource(GetTask, '/GetTask')
+
+api.add_resource(GetAListedSite, '/ListedSite/GetAListedSite')
+api.add_resource(IncrementAListedSite, '/ListedSite/IncrementAListedSite')
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
