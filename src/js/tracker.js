@@ -10,11 +10,11 @@
         
         domainName is the domain name of the site to be tracked/blocked.
         
-        dailyTime is the elapsed time spent on a site, in minutes, for the day.
+        dailyTime is the elapsed time spent on a site, in seconds, for the day.
         
         isBlocked distinguished blocked sites from tracked sites. We block blocked sites.
         
-        timeCap is the amount of time, in minutes, a user can spend on the site before it
+        timeCap is the amount of time, in seconds, a user can spend on the site before it
         gets blocked.
         
     Getting the listed site:
@@ -55,7 +55,7 @@ $(document).ready(function() {
                     console.log("Begin monitoring", listedSite.domainName);
                     setInterval(function() {
                         monitorSite(listedSite);
-                    }, 500);
+                    }, 1000); // Sends POST every second
                     listedSite.checkTimeCap();
                 }
             },
@@ -66,17 +66,22 @@ $(document).ready(function() {
     });
 });
 
-// Called every minute to update time on site and updating info in the database
-// Currently just testing blocking and tracking without API calls
+// Called every second to update time on site and updating info in the database
 function monitorSite(site) {
     site.checkTimeCap();
+    
+    var siteInfo = { username: site.owner,
+                     domainName: site.domainName,
+                     dailyTime: site.dailyTime };
     if (site.dailyTime < site.timeCap) {
         $.ajax({
-            type: 'PUT',
+            type: 'POST',
             url: 'http://cs180.no-ip.info/ListedSite/IncrementAListedSite',
-            data: site,
-            success: function(updatedSite) {
-                site.dailyTime = updatedSite.dailyTime;
+            data: siteInfo,
+            dataType: 'json',
+            success: function(data, textStatus, jqXHR) {
+                site.dailyTime = data.dailyTime;
+                console.log(data, textStatus, jqXHR);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown);
@@ -85,11 +90,12 @@ function monitorSite(site) {
     }
 }
 
-// How to block site?
-// Currently redirects you to facebook if you exceed your time
+// Blocks a site by redirecting user to a html page
 function blockSite() {
-    console.log("BLOCKING SITE");
-    window.location.replace("https://www.facebook.com");
+    var htmlPath = chrome.extension.getURL('src/test.html');
+    console.log("Attempting to block site using", htmlPath);
+    document.location = htmlPath;
+    $(body).html(html);
 }
 
 function ListedSite(owner, domainName, dailyTime, isBlocked, timeCap) {

@@ -39,5 +39,6 @@
 	  "https://www.googleapis.com/auth/gmail.compose",
 	  "https://www.googleapis.com/auth/drive"
     ]
-  }
+  },
+  "web_accessible_resources": [ "src/test.html" ]
 }
