@@ -1,7 +1,12 @@
+from OpenSSL import SSL
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 from flask.ext.mysql import MySQL
 import db_info
+
+# context = SSL.Context(SSL.SSLv23_METHOD)
+# context.use_privatekey_file('desktab.me.key')
+# context.use_certificate_file('desktab.me.crt')
 
 app = Flask(__name__)
 api = Api(app)
@@ -198,8 +203,13 @@ class IncrementAListedSite(Resource):
 
             cursor = conn.cursor()
             cursor.callproc('incrementAListedSite', (_username, _domainName, _dailyTime))
-            conn.commit()
-            cursor.close()
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                cursor.close()
+            else:
+                return { 'statuscode': '1000', 'message': str(data[0]) }
 
             # Needs a new cursor to execute another procedure
             cursor = conn.cursor()
@@ -217,6 +227,144 @@ class IncrementAListedSite(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
+class AddListedSite(Resource):
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of listedsite')
+            parser.add_argument('domainName', type=str, help='Domain to block')
+            parser.add_argument('isBlocked', type=int, help='Blocking or tracking')
+            parser.add_argument('timeCap', type=int, help='Time before block')
+            args = parser.parser_args()
+
+            _username = args['username']
+            _domainName = args['domainName']
+            _isBlocked = args['isBlocked']
+            _timeCap = args['timeCap']
+
+            conn = mysql.connect()
+
+            cursor = conn.cursor()
+            cursor.callproc('createListedSite', (_username, _domainName, _isBlocked, _timeCap))
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                cursor.close()
+            else:
+                return { 'statuscode': '1000', 'message': str(data[0]) }
+
+            cursor = conn.cursor()
+            cursor.callproc('createSiteTimeHistory', (_username, _domainName))
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                cursor.close()
+            else:
+                return { 'statuscode': '1000', 'message': str(data[0]) }
+
+        except Exception as e:
+            return { 'error': str(e) }
+
+class EditListedSite(Resource):
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of listedsite')
+            parser.add_argument('domainName', type=str, help='Domain to block')
+            parser.add_argument('isBlocked', type=int, help='Blocking or tracking')
+            parser.add_argument('timeCap', type=int, help='Time before block')
+            args = parser.parser_args()
+
+            _username = args['username']
+            _domainName = args['domainName']
+            _isBlocked = args['isBlocked']
+            _timeCap = args['timeCap']
+
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.callproc('updateListedSite', (_username, _domainName, _isBlocked, _timeCap))
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                cursor.close()
+                return { 'message': 'Successfully updated ListedSite' }
+            else:
+                return { 'statuscode': '1000', 'message': str(data[0]) }
+
+        except Exception as e:
+            return { 'error': str(e) }
+
+class DeleteListedSite(Resource):
+    def delete(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of listedsite')
+            parser.add_argument('domainName', type=str, help='Domain to block')
+            args = parser.parser_args()
+
+            _username = args['username']
+            _domainName = args['domainName']
+
+            conn = mysql.connect()
+
+            cursor = conn.cursor()
+            cursor.callproc('deleteListedSite', (_username, _domainName))
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                cursor.close()
+            else:
+                return { 'statuscode': '1000', 'message': str(data[0]) }
+
+            cursor = conn.cursor()
+            cursor.callproc('deleteSiteTimeHistory', (_username, _domainName))
+            data = cursor.fetchall()
+
+            if len(data) is 0:
+                conn.commit()
+                cursor.close()
+                return { 'message': 'Successfully deleted ListedSite and SiteTimeHistory' }
+            else:
+                return { 'statuscode': '1000', 'message': str(data[0]) }
+
+        except Exception as e:
+            return { 'error': str(e) }
+
+class GetASiteTimeHistory(Resource):
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of listedsite')
+            parser.add_argument('domainName', type=str, help='Domain to block')
+            args = parser.parser_args()
+
+            _username = args['username']
+            _domainName = args['domainName']
+
+            conn = mysql.connect()
+
+            cursor = conn.cursor()
+            cursor.callproc('getSiteTimeHistory', (_username, _domainName))
+            data = cursor.fetchall()
+
+            history = { 'owner': data[0],
+                        'domainName': data[1],
+                        'dailyTime_0': data[2],
+                        'dailyTime_1': data[3],
+                        'dailyTime_2': data[4],
+                        'dailyTime_3': data[5],
+                        'dailyTime_4': data[6],
+                        'dailyTime_5': data[7],
+                        'dailyTime_6': data[8] }
+
+            return history
+
+        except Exception as e:
+            return { 'error': str(e) }
 
 api.add_resource(CreateUser, '/CreateUser')
 api.add_resource(AddTask, '/AddTask')
@@ -226,6 +374,10 @@ api.add_resource(GetTask, '/GetTask')
 
 api.add_resource(GetAListedSite, '/ListedSite/GetAListedSite')
 api.add_resource(IncrementAListedSite, '/ListedSite/IncrementAListedSite')
+api.add_resource(AddListedSite, '/ListedSite/AddListedSite')
+api.add_resource(EditListedSite, '/ListedSite/EditListedSite')
+api.add_resource(DeleteListedSite, '/ListedSite/DeleteListedSite')
+api.add_resource(GetASiteTimeHistory, '/ListedSite/GetASiteTimeHistory')
 if __name__ == '__main__':
     app.run(debug=True)
 
