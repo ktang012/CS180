@@ -4,10 +4,6 @@ from flask_restful import Resource, Api, reqparse
 from flask.ext.mysql import MySQL
 import db_info
 
-# context = SSL.Context(SSL.SSLv23_METHOD)
-# context.use_privatekey_file('desktab.me.key')
-# context.use_certificate_file('desktab.me.crt')
-
 app = Flask(__name__)
 api = Api(app)
 
@@ -366,6 +362,12 @@ class GetASiteTimeHistory(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
+class DeskTab(Resource):
+    def get(self):
+        return {'message': 'DeskTab is up!' }
+
+api.add_resource(DeskTab, '/')
+
 api.add_resource(CreateUser, '/CreateUser')
 api.add_resource(AddTask, '/AddTask')
 api.add_resource(DeleteTask, '/DeleteTask')
@@ -374,10 +376,6 @@ api.add_resource(GetTask, '/GetTask')
 
 api.add_resource(GetAListedSite, '/ListedSite/GetAListedSite')
 api.add_resource(IncrementAListedSite, '/ListedSite/IncrementAListedSite')
-api.add_resource(AddListedSite, '/ListedSite/AddListedSite')
-api.add_resource(EditListedSite, '/ListedSite/EditListedSite')
-api.add_resource(DeleteListedSite, '/ListedSite/DeleteListedSite')
-api.add_resource(GetASiteTimeHistory, '/ListedSite/GetASiteTimeHistory')
 if __name__ == '__main__':
-    app.run(debug=True)
-
+    context = ('desktab_me.ca-bundle.crt', 'desktab.me.key')
+    app.run(debug=True, ssl_context=context)
