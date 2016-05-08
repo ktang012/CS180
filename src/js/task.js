@@ -6,7 +6,7 @@ $( document ).ready (function(){
 		};
 		$.ajax({
 			type:'GET',
-			url:'http://cs180.no-ip.info/GetTask',
+			url:'https://desktab.me/GetTask',
 			data: login,
 			success: function(tasks) {
 				$.each (tasks, function (i, tasks) {
@@ -21,7 +21,7 @@ $( document ).ready (function(){
 							};
 							$.ajax({
 								type: 'POST',
-								url: 'http://cs180.no-ip.info/CheckTask',
+								url: 'https://desktab.me/CheckTask',
 								data: cross,
 								success: function(cross) {
 								    location.reload();
@@ -42,7 +42,7 @@ $( document ).ready (function(){
 					        };
 						    $.ajax({
 						        type: 'DELETE',
-							    url: 'http://cs180.no-ip.info/DeleteTask',
+							    url: 'https://desktab.me/DeleteTask',
 							    data: deletion,
 							    success: function(deletion) {
 							        location.reload();
@@ -67,7 +67,7 @@ $( document ).ready (function(){
 							};
 							$.ajax({
 								type: 'POST',
-								url: 'http://cs180.no-ip.info/CheckTask',
+								url: 'https://desktab.me/CheckTask',
 								data: cross,
 								success: function(cross) {
 								    location.reload();
@@ -89,7 +89,7 @@ $( document ).ready (function(){
 							};
 							$.ajax({
 								type: 'DELETE',
-								url: 'http://cs180.no-ip.info/DeleteTask',
+								url: 'https://desktab.me/DeleteTask',
 								data: deletion,
 								success: function(deletion) {
 								    location.reload();
@@ -133,7 +133,7 @@ function save_task() {
 		    };
 		    $.ajax({
 	            type: 'POST',
-			    url: 'http://cs180.no-ip.info/AddTask',
+			    url: 'https://desktab.me/AddTask',
 			    data: task,
 			    success: function(data) {
 			        location.reload();

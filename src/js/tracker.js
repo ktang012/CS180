@@ -49,17 +49,15 @@
             listedSiteObject.dailyTime = 0
 */
 
-
-// Need to configure apache server to have SSL for secure endpoints
-// to support HTTPS sites
 $(document).ready(function() {
+    console.log("Hello world");
     chrome.storage.sync.get("username", function(data) {
         var userInfo = { username: data.username,
                          domainName: document.domain };
-        console.log(user.username, "is on", user.domainName);
+        console.log(userInfo.username, "is on", userInfo.domainName);
         $.ajax({
             type: 'GET',
-            url: 'http://cs180.no-ip.info/ListedSite/GetAListedSite',
+            url: 'https://desktab.me/ListedSite/GetAListedSite',
             data: userInfo,
             success: function(site) {
                 var listedSite = new ListedSite(site.owner, site.domainName, 
@@ -89,7 +87,7 @@ function monitorSite(site) {
                          dailyTime: site.dailyTime };
         $.ajax({
             type: 'POST',
-            url: 'http://cs180.no-ip.info/ListedSite/IncrementAListedSite',
+            url: 'https://desktab.me/ListedSite/IncrementAListedSite',
             data: siteInfo,
             success: function(data, textStatus, jqXHR) {
                 site.dailyTime = data.dailyTime;

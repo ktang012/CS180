@@ -8,11 +8,18 @@ $(document).ready(function() {
 		};
 		
 		// Store username for us in content scripts...
-		chrome.storage.sync.set(login);
+		chrome.storage.sync.set(login, function() {
+		    console.log("Stored", login);
+		    chrome.storage.sync.get("username", function(data) {
+		        console.log(data.username);
+		        
+		    });
+		    console.log('afk');
+		});
 		
 		$.ajax({
 			type: 'POST',
-			url: 'http://cs180.no-ip.info/CreateUser',
+			url: 'https://desktab.me/CreateUser',
 			data: login,
 			success: function(data) {
                 // console.log(data);

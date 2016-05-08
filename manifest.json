@@ -1,5 +1,5 @@
 {
-  "name": "CS180 Extension",
+  "name": "DeskTab",
   "description": "Productivity extension",
   "version": "1.1",
   "permissions": [
@@ -7,7 +7,7 @@
     "geolocation",
     "identity",
     "storage",
-    "http://cs180.no-ip.info/",
+    "https://desktab.me/",
     "https://*.yahooapis.com/*",
 	"browsingData",
 	"*://*.google.com/*",
