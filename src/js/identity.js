@@ -14,7 +14,6 @@ $(document).ready(function() {
 		        console.log(data.username);
 		        
 		    });
-		    console.log('afk');
 		});
 		
 		$.ajax({

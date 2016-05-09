@@ -50,7 +50,6 @@
 */
 
 $(document).ready(function() {
-    console.log("Hello world");
     chrome.storage.sync.get("username", function(data) {
         var userInfo = { username: data.username,
                          domainName: document.domain };
@@ -81,7 +80,7 @@ $(document).ready(function() {
 // Called every second to update time on site and updating info in the database
 function monitorSite(site) {
     site.checkTimeCap();
-    if (site.dailyTime < site.timeCap) {
+    if (site.dailyTime < site.timeCap || !site.isBlocked) {
         var siteInfo = { username: site.owner,
                          domainName: site.domainName,
                          dailyTime: site.dailyTime };

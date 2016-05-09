@@ -223,6 +223,8 @@ class IncrementAListedSite(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
+# When using this API call, send isBlocked as any integer, but the value doesn't matter
+# Just doing this to stay consistent with the call itself
 class AddListedSite(Resource):
     def post(self):
         try:
@@ -231,7 +233,7 @@ class AddListedSite(Resource):
             parser.add_argument('domainName', type=str, help='Domain to block')
             parser.add_argument('isBlocked', type=int, help='Blocking or tracking')
             parser.add_argument('timeCap', type=int, help='Time before block')
-            args = parser.parser_args()
+            args = parser.parse_args()
 
             _username = args['username']
             _domainName = args['domainName']
@@ -257,6 +259,7 @@ class AddListedSite(Resource):
             if len(data) is 0:
                 conn.commit()
                 cursor.close()
+                return { 'message': 'Successfully created ListedSite and SiteTimeHistory' }
             else:
                 return { 'statuscode': '1000', 'message': str(data[0]) }
 
@@ -271,7 +274,7 @@ class EditListedSite(Resource):
             parser.add_argument('domainName', type=str, help='Domain to block')
             parser.add_argument('isBlocked', type=int, help='Blocking or tracking')
             parser.add_argument('timeCap', type=int, help='Time before block')
-            args = parser.parser_args()
+            args = parser.parse_args()
 
             _username = args['username']
             _domainName = args['domainName']
@@ -299,7 +302,7 @@ class DeleteListedSite(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('username', type=str, help='Owner of listedsite')
             parser.add_argument('domainName', type=str, help='Domain to block')
-            args = parser.parser_args()
+            args = parser.parse_args()
 
             _username = args['username']
             _domainName = args['domainName']
@@ -336,7 +339,7 @@ class GetASiteTimeHistory(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('username', type=str, help='Owner of listedsite')
             parser.add_argument('domainName', type=str, help='Domain to block')
-            args = parser.parser_args()
+            args = parser.parse_args()
 
             _username = args['username']
             _domainName = args['domainName']
@@ -345,7 +348,7 @@ class GetASiteTimeHistory(Resource):
 
             cursor = conn.cursor()
             cursor.callproc('getSiteTimeHistory', (_username, _domainName))
-            data = cursor.fetchall()
+            data = cursor.fetchone()
 
             history = { 'owner': data[0],
                         'domainName': data[1],
@@ -376,6 +379,11 @@ api.add_resource(GetTask, '/GetTask')
 
 api.add_resource(GetAListedSite, '/ListedSite/GetAListedSite')
 api.add_resource(IncrementAListedSite, '/ListedSite/IncrementAListedSite')
+api.add_resource(AddListedSite, '/ListedSite/AddListedSite')
+api.add_resource(EditListedSite, '/ListedSite/EditListedSite')
+api.add_resource(DeleteListedSite, '/ListedSite/DeleteListedSite')
+api.add_resource(GetASiteTimeHistory, '/ListedSite/GetASiteTimeHistory')
+
 if __name__ == '__main__':
     context = ('desktab_me.ca-bundle.crt', 'desktab.me.key')
     app.run(debug=True, ssl_context=context)
