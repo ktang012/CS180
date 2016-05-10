@@ -10,6 +10,7 @@
         owner is the user that owns the ListedSite.
         domainName is the domain name of the site to be tracked/blocked.
         dailyTime is the elapsed time spent on a site, in seconds, for the day.
+        blockedtime is the elapsed time spent on site while isBlocked is true.
         isBlocked distinguished blocked sites from tracked sites. We block blocked sites.
         timeCap is the amount of time, in seconds, a user can spend on the site before it
         gets blocked.
@@ -17,19 +18,27 @@
     Getting a ListedSite:
         We first send our current domain name to our server, the server will
         see if the domain name is listed for that user. If it is, the server
-        will reply with the corresponding ListedSite object.
+        will reply with the corresponding ListedSite object and begin monitoring.
         
     Monitoring a ListedSite:
-        Every minute we will update our fields accordingly and then sending a
+        Every second we will update our fields accordingly and then sending a
         request to the server to do the same. If the request is NOT successful, we
         will not keep any changes on the changes on our client. If a site is a blocked site,
-        the site will be blocked when dailyTime >= timeCap.
+        the site will be blocked when blockedTime >= timeCap.
+        
+        While monitoring a site, there are two states a ListedSite can be, isBlocked or 
+        is NOT blocked. If isBlocked, then both dailyTime and blockedTime will
+        be incremented. Else if !isBlocked, only dailyTime will be incremented. 
+        
+        Note: When the user blocks a site and unblocks it, the value of blockedTime
+        remains wherever it was left off at. It will be set back to zero similar
+        to dailyTime
         
     ListedSite objects in MySQL:
         A user can own multiple or none ListedSite objects. The objects will be identified by
         their owner, and domain name. Each ListedSite object is associated with a
-        SiteTimeHistory object. In addition, ListedSite.dailyTime will be set to 0 every 24
-        hours, see SiteTimeHistory for more details.
+        SiteTimeHistory object. In addition, ListedSite.dailyTime and ListedSite.blockedTime
+        will be set to 0 every 24 hours, see SiteTimeHistory for more details.
     
     SiteTimeHistory object:
         Similar to a ListedSite object,  but keeps track of the history of ListedSite objects.
@@ -60,8 +69,9 @@ $(document).ready(function() {
             data: userInfo,
             success: function(site) {
                 var listedSite = new ListedSite(site.owner, site.domainName, 
-                                                site.dailyTime, site.isBlocked, 
-                                                site.timeCap);
+                                                site.dailyTime, site.blockedTime,
+                                                site.isBlocked, site.timeCap);
+                // console.log(listedSite);
                 if (!(listedSite.domainName === undefined || listedSite.owner === undefined)) {
                     console.log("Begin monitoring", listedSite.domainName);
                     setInterval(function() {
@@ -80,7 +90,7 @@ $(document).ready(function() {
 // Called every second to update time on site and updating info in the database
 function monitorSite(site) {
     site.checkTimeCap();
-    if (site.dailyTime < site.timeCap || !site.isBlocked) {
+    if (!site.isBlocked) {
         var siteInfo = { username: site.owner,
                          domainName: site.domainName,
                          dailyTime: site.dailyTime };
@@ -90,11 +100,34 @@ function monitorSite(site) {
             data: siteInfo,
             success: function(data, textStatus, jqXHR) {
                 site.dailyTime = data.dailyTime;
+                console.log('called listed handler');
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown);
             }
         });
+    }
+    else if (site.isBlocked && site.blockedTime <= site.timeCap) {
+        var siteInfo = { username: site.owner,
+                         domainName: site.domainName,
+                         dailyTime: site.dailyTime,
+                         blockedTime: site.blockedTime };
+        $.ajax({
+            type: 'POST',
+            url: 'https://desktab.me/ListedSite/IncrementABlockedSite',
+            data: siteInfo,
+            success: function (data, textStatus, jqXHR) {
+                site.dailyTime = data.dailyTime;
+                site.blockedTime = data.blockedTime;
+                console.log('got', data.dailyTime, data.blockedTime);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        });
+    }
+    else {
+        console.log("WTF IS GOING ON");
     }
 }
 
@@ -106,15 +139,19 @@ function blockSite() {
     $(body).html(html);
 }
 
-function ListedSite(owner, domainName, dailyTime, isBlocked, timeCap) {
+// ListedSite and SiteTimeHistory objects (or similar objects) should be used in the 
+// UI of the extension for consistency
+
+function ListedSite(owner, domainName, dailyTime, blockedTime, isBlocked, timeCap) {
     this.owner = owner;
     this.domainName = domainName;
     this.dailyTime = dailyTime;
+    this.blockedTime = blockedTime;
     this.isBlocked = isBlocked;
     this.timeCap = timeCap;
     
     this.checkTimeCap = function() {
-        if (this.isBlocked && this.dailyTime >= this.timeCap) {
+        if (this.isBlocked && this.blockedTime >= this.timeCap) {
             blockSite();
         }
     };
