@@ -283,22 +283,25 @@ class IncrementABlockedSite(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
-# When using this API call, send isBlocked as 0, but the value doesn't matter
-# Just doing this to stay consistent with the call parameters
+# Ignore _isBlocked, phpMyAdmin is being dumb
+# IMPORTANT: This method is atomic, if createListedSite or createSiteTimeHistory fails
+# then nothing will be committed
 class AddListedSite(Resource):
     def post(self):
         try:
             parser = reqparse.RequestParser()
             parser.add_argument('username', type=str, help='Owner of listedsite')
             parser.add_argument('domainName', type=str, help='Domain to block')
-            parser.add_argument('isBlocked', type=int, help='Blocking or tracking')
             parser.add_argument('timeCap', type=int, help='Time before block')
             args = parser.parse_args()
 
             _username = args['username']
             _domainName = args['domainName']
-            _isBlocked = args['isBlocked']
             _timeCap = args['timeCap']
+            _isBlocked = 0
+
+            if _timeCap is None:
+                _timeCap = 0
 
             conn = mysql.connect()
 
@@ -307,7 +310,6 @@ class AddListedSite(Resource):
             data = cursor.fetchall()
 
             if len(data) is 0:
-                conn.commit()
                 cursor.close()
             else:
                 return { 'statuscode': '1000', 'message': str(data[0]) }
@@ -324,7 +326,7 @@ class AddListedSite(Resource):
                 return { 'statuscode': '1000', 'message': str(data[0]) }
 
         except Exception as e:
-            return { 'error': str(e) }
+            return { 'error': str(e), 'note': 'This method is atomic! Check ListedSite and SiteTimeHistory!'}
 
 class EditListedSite(Resource):
     def post(self):
@@ -340,6 +342,9 @@ class EditListedSite(Resource):
             _domainName = args['domainName']
             _isBlocked = args['isBlocked']
             _timeCap = args['timeCap']
+
+            if _timeCap is None:
+                _timeCap = 0
 
             conn = mysql.connect()
             cursor = conn.cursor()
@@ -397,7 +402,7 @@ class GetASiteTimeHistory(Resource):
     def get(self):
         try:
             parser = reqparse.RequestParser()
-            parser.add_argument('username', type=str, help='Owner of listedsite')
+            parser.add_argument('username', type=str, help='Owner of ListedSite')
             parser.add_argument('domainName', type=str, help='Domain to block')
             args = parser.parse_args()
 
@@ -425,33 +430,71 @@ class GetASiteTimeHistory(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
+class GetListedSites(Resource):
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of ListedSite')
+            args = parser.parse_args()
+
+            _username = args['username']
+
+            conn = mysql.connect()
+
+            cursor = conn.cursor()
+            cursor.callproc('getListedSites', args=[_username])
+            data = cursor.fetchall()
+
+            site_list = []
+            for i in data:
+                site = { 'owner': i[0],
+                         'domainName': i[1],
+                         'dailyTime': i[2],
+                         'blockedTime': i[3],
+                         'isBlocked': i[4],
+                         'timeCap': i[5] }
+                site_list.append(site)
+
+            return site_list
+
+        except:
+            return { 'error': str(e) }
+
+
+
+
+def GetCredentials():
+    home_dir = os.path.expanduser('/var/www/test_app/test_app/')
+    credential_dir = os.path.join(home_dir, '.credentials')
+    if not os.path.exists(credential_dir):
+        os.makedirs(credential_dir)
+    credential_path = os.path.join(credential_dir, 'gmail-python-quickstart.json')
+    store = oauth2client.file.Storage(credential_path)
+    credentials = store.get()
+    if not credentials or credentials.invalid:
+        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+        flow.user_agent = APPLICATION_NAME
+        flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+
+        if flags:
+            credentials = tools.run_flow(flow, store, flags)
+        else:
+            credentials = tools.run(flow, store)
+        return credentials
+
+def CreateMessage(sender, to, subject, message_text):
+    message = MIMEText(message_text)
+    message['to'] = to
+    message['from'] = sender
+    message['subject'] = subject
+    #return {'message' : 'dd' }
+    return {'raw': base64.urlsafe_b64encode(message.as_string())}
+
+
+
+
+
 class SendEmail(Resource):
-    def GetCredentials(self):
-        home_dir = os.path.expanduser('/var/www/test_app/test_app/')
-        credential_dir = os.path.join(home_dir, '.credentials')
-        if not os.path.exists(credential_dir):
-            os.makedirs(credential_dir)
-        credential_path = os.path.join(credential_dir, 'gmail-python-quickstart.json')
-        store = oauth2client.file.Storage(credential_path)
-        credentials = store.get()
-        if not credentials or credentials.invalid:
-            flow = client.flow_from_clientsecrets('var/www/test_app/test_app/' + CLIENT_SECRET_FILE, SCOPES)
-            flow.user_agent = APPLICATION_NAME
-            flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-
-            if flags:
-                credentials = tools.run_flow(flow, store, flags)
-            else:
-                credentials = tools.run(flow, store)
-            return credentials
-
-    def CreateMessage(self, sender, to, subject, message_text):
-        message = MIMEText(message_text)
-        message['to'] = to
-        message['from'] = sender
-        message['subject'] = subject
-	return {'message' : 'dd' }
-        return {'raw': base64.urlsafe_b64encode(message.as_string())}
 
     def get(self):
         try:
@@ -466,11 +509,11 @@ class SendEmail(Resource):
             _to = args['to']
             _subject = args['subject']
             _message_text = args['message_text']
-            credentials = self.GetCredentials()
-            http = credentials.authorize(httplib2.Http())
-            service = discovery.build('gmail', 'v1', http=http)
-            message = self.CreateMessage(_sender, _to, _subject, _message_text)
-            message = (service.users().messages().send(userId=_sender, body=message).execute())
+            credentials = GetCredentials()
+            #http = credentials.authorize(httplib2.Http())
+            #service = discovery.build('gmail', 'v1', http=http)
+            #message = self.CreateMessage(_sender, _to, _subject, _message_text)
+            #message = (service.users().messages().send(userId=_sender, body=message).execute())
 
             return { 'message': 'Success!' }
 
@@ -497,6 +540,7 @@ api.add_resource(AddListedSite, '/ListedSite/AddListedSite')
 api.add_resource(EditListedSite, '/ListedSite/EditListedSite')
 api.add_resource(DeleteListedSite, '/ListedSite/DeleteListedSite')
 api.add_resource(GetASiteTimeHistory, '/ListedSite/GetASiteTimeHistory')
+api.add_resource(GetListedSites, 'ListedSite/GetListedSites')
 
 api.add_resource(SendEmail, '/SendEmail')
 

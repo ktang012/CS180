@@ -59,6 +59,18 @@
 */
 
 $(document).ready(function() {
+    // Set up a listener for messages
+    chrome.runtime.onMessage.addListener(function(message, sender, response) {
+        // Verify if onMessage is from add_site and method
+        // It should be sent when add_site is loaded
+        if (message.from == 'add_site' && message.method == 'getDomainName') {
+            var currentSite = {
+                domainName: document.domain
+            };
+            response(currentSite);
+        }
+    });
+    
     chrome.storage.sync.get("username", function(data) {
         var userInfo = { username: data.username,
                          domainName: document.domain };
@@ -100,7 +112,6 @@ function monitorSite(site) {
             data: siteInfo,
             success: function(data, textStatus, jqXHR) {
                 site.dailyTime = data.dailyTime;
-                console.log('called listed handler');
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown);
@@ -119,22 +130,17 @@ function monitorSite(site) {
             success: function (data, textStatus, jqXHR) {
                 site.dailyTime = data.dailyTime;
                 site.blockedTime = data.blockedTime;
-                console.log('got', data.dailyTime, data.blockedTime);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown);
             }
         });
     }
-    else {
-        console.log("WTF IS GOING ON");
-    }
 }
 
 // Blocks a site by redirecting user to a HTML page
 function blockSite() {
-    var htmlPath = chrome.extension.getURL('src/test.html');
-    console.log("Attempting to block site using", htmlPath);
+    var htmlPath = chrome.extension.getURL('src/blocked.html');
     document.location = htmlPath;
     $(body).html(html);
 }

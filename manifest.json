@@ -11,11 +11,14 @@
     "https://*.yahooapis.com/*",
 	"browsingData",
 	"*://*.google.com/*",
-	"identity.email"
+	"identity.email",
+	"tabs",
+	"activeTab"
   ],
   "browser_action": {
       "default_title": "New Tab",
-      "default_icon": "src/img/icon.png"
+      "default_icon": "src/img/icon.png",
+      "default_popup": "src/dropdown.html"
   },
   "chrome_url_overrides" : {
     "newtab": "src/newtab.html"
@@ -40,5 +43,5 @@
 	  "https://www.googleapis.com/auth/drive"
     ]
   },
-  "web_accessible_resources": [ "src/test.html" ]
+  "web_accessible_resources": [ "src/blocked.html" ]
 }

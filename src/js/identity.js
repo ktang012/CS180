@@ -7,13 +7,12 @@ $(document).ready(function() {
 			username: token.email
 		};
 		
-		// Store username for us in content scripts...
+		// Store username for use in content scripts...
 		chrome.storage.sync.set(login, function() {
-		    console.log("Stored", login);
-		    chrome.storage.sync.get("username", function(data) {
-		        console.log(data.username);
-		        
-		    });
+		    // console.log("Stored", login);
+		    // chrome.storage.sync.get("username", function(data) {
+		        // console.log(data.username);	        
+		    // });
 		});
 		
 		$.ajax({
