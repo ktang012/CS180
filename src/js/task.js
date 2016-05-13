@@ -1,150 +1,166 @@
-$( document ).ready (function(){
-	$("#save_task").click(save_task);
-	chrome.identity.getProfileUserInfo(function(token) {
-		var login = {
-			username: token.email
-		};
-		$.ajax({
-			type:'GET',
-			url:'https://desktab.me/GetTask',
-			data: login,
-			success: function(tasks) {
-				$.each (tasks, function (i, tasks) {
-					if (tasks.status === 0) {
-						var newTaskId = tasks.description.toString();
-						$('#tasks').append('<li> <a id=' + newTaskId + ' style=\"text-decorations:none; color:inherit;\">'+ tasks.description + '</a> </li>');
-						var thisTask = $('#' + newTaskId);
-						$(thisTask).click(function() {
-							var cross = {
-								taskid: tasks.taskid,
-								status: tasks.status
-							};
-							$.ajax({
-								type: 'POST',
-								url: 'https://desktab.me/CheckTask',
-								data: cross,
-								success: function(cross) {
-								    location.reload();
-								    // This does not cross it out...
-									//$('#cross').append('<li>taskid: ' + cross.taskid + ', status: 1</li>');
-								},
-								error: function() {
-									alert('error task');
-								}
-							});
-						});
-						var newButtonId = tasks.taskid.toString();
-                        $('#tasks').append ('<li> <button id=' + newButtonId + '> Delete </button></li>');
-						var thisButton = $('#' + newButtonId);
-                        $(thisButton).click(function() {
-							var deletion = {
-								taskid: tasks.taskid
-					        };
-						    $.ajax({
-						        type: 'DELETE',
-							    url: 'https://desktab.me/DeleteTask',
-							    data: deletion,
-							    success: function(deletion) {
-							        location.reload();
-							        // This does not delete it...
-							        // $deletion.append('<li>taskid: ' + deletion.taskid + '</li>');
-							    },
-							    error: function() {
-							        alert('error task');
-							    }
-						    });
-					    });
-					}
-					else {
-						//strikethrough if status is 1
-						var newTaskId = tasks.description.toString();
-						$('#tasks').append('<li> <a id=' + newTaskId + ' style=\"text-decorations:none; color:inherit;\"><s>'+ tasks.description + '</s></a> </li>');
-						var thisTask = $('#' + newTaskId);
-						$(thisTask).click(function(){
-							var cross = {
-								taskid: tasks.taskid,
-								status: tasks.status
-							};
-							$.ajax({
-								type: 'POST',
-								url: 'https://desktab.me/CheckTask',
-								data: cross,
-								success: function(cross) {
-								    location.reload();
-								    // This does not cross it out...
-									// $cross.append('<li>taskid: ' + cross.taskid + ', status: 0</li>');
-								},
-								error: function() {
-									alert('error task');
-								}
-							});
-						});
-
-						var newButtonId = tasks.taskid.toString();
-                        $('#tasks').append ('<li> <button id=' + newButtonId + '> Delete </button></li>');
-						var thisButton = $('#' + newButtonId);
-                        $(thisButton).click(function() {
-							var deletion = {
-								taskid: tasks.taskid
-							};
-							$.ajax({
-								type: 'DELETE',
-								url: 'https://desktab.me/DeleteTask',
-								data: deletion,
-								success: function(deletion) {
-								    location.reload();
-								    // This does not delete it
-									// $deletion.append('<li>taskid: ' + deletion.taskid + '</li>');
-								},
-								error: function() {
-									alert('error task');
-								}
-							});
-						});
-					}
-					$('#tasks').append ('<li><ul>deadline: '  + tasks.deadline + '<ul/></li>');
-					$('#tasks').append ('<li></li>');
-				});
-			}
-		});
-	});
+$(document).ready(function() {
+    chrome.identity.getProfileUserInfo(function(data) {
+        var userInfo = { 
+            username: data.email
+        };
+        loadTasks(userInfo);
+        $('#save_task').click(function() {
+            addTask(data.email);
+        });
+    });
 });
 
-function save_task() {
-    chrome.identity.getProfileUserInfo(function(token) {
-        if (token.email === '') {
-            return;
+function loadTasks(userInfo) {
+    $.ajax({
+        type: 'GET',
+        url: 'https://desktab.me/GetTask',
+        data: userInfo,
+        success: function(tasks, textStatus, jqXHR) {
+            var newHtml = '';
+            var monthName = ['January', 'February', 'March', 'April', 
+                             'May', 'June', 'July', 'August',
+                             'September', 'October', 'November', 'December'];                 
+            var deleteButtons = new Array();
+            var crossButtons = new Array();                     
+            var taskHtml = '';
+            
+            for (var i = 0; i < tasks.length; ++i) {
+                var taskDescription = tasks[i].description;
+                var taskDeadline = '';
+                
+                if (tasks[i].deadline.toUpperCase() == 'NONE') {
+                    taskDeadline = 'N/A';
+                }
+                else {
+                    var taskDate = new Date(tasks[i].deadline);
+                    taskDeadline += monthName[taskDate.getMonth()];
+                    taskDeadline += ', ';
+                    taskDeadline += taskDate.getDay();
+                    taskDeadline += ' ';
+                    taskDeadline += taskDate.getFullYear();
+                }
+                
+                var taskStatus = tasks[i].status
+                var deleteId = 'delete_' + tasks[i].taskid.toString(); // for delete button
+                var crossId = 'cross_' + tasks[i].taskid.toString(); // for (un)crossing a task
+                
+                taskHtml += '<li> Due: ' + taskDeadline + '<br/>';
+
+                //This is terrible, I'm sorry
+                if (taskStatus === 1) {
+                    var crossFlag = '_isCrossedOut';
+                    crossId += crossFlag;
+                    taskHtml += '<a id=' + crossId + ' style="text-decorations:none; color:inherit;">';
+                    taskHtml += '<s>' + taskDescription + '</s></a></li>';
+                }
+                else {
+                    taskHtml += '<a id=' + crossId + ' style="text-decorations:none; color:inherit;">';
+                    taskHtml += taskDescription + '</a></li>';
+                }
+                
+                taskHtml += '<li> <button id=' + deleteId + '> Delete </button></li>';
+
+                deleteButtons.push(deleteId);
+                crossButtons.push(crossId);
+                
+                newHtml += taskHtml;
+                taskHtml = '';
+            }
+                
+            $('#tasks').html(newHtml);
+            
+            for (var i = 0; i < deleteButtons.length && i < crossButtons.length; ++i) {
+                $('#' + deleteButtons[i]).click(function() {
+                    deleteTask(this.id.replace(/\D/g, ''));
+                });
+                $('#' + crossButtons[i]).click(function() {
+                    crossTask(this.id.replace(/\D/g, ''), this.id.indexOf('_isCrossedOut'));
+                });
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(textStatus, errorThrown);
         }
-        else {
-	        var input, task, year, month, day, date;
-		    input=document.getElementById("form1") ;
-		    task=input.elements["task"].value;
-		    if (task === '') {
-		        return;
-		    }
-		    year=input.elements["year"].value;
-		    month=input.elements["month"].value;
-		    day=input.elements["day"].value;
-		    date= year + "-" + month + "-" + day;
-		    var task = {
-	            username: token.email,
-			    deadline: date,
-			    description: task
-		    };
-		    $.ajax({
-	            type: 'POST',
-			    url: 'https://desktab.me/AddTask',
-			    data: task,
-			    success: function(data) {
-			        location.reload();
-			    },
-			    error: function() {
-		            alert('error task');
-			    }
-		    });
-		}
     });
-};
+}
 
+function deleteTask(taskId) {
+    var deleteTask = {
+        taskid: taskId
+    };
+    $.ajax({
+        type: 'DELETE',
+        url: 'https://desktab.me/DeleteTask',
+        data: deleteTask,
+        success: function(data, textStatus, jqXHR) {
+            chrome.identity.getProfileUserInfo(function(identity) {
+                    var userInfo = { 
+                    username: identity.email
+                };
+                loadTasks(userInfo); 
+            });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(textStatus, errorThrown);
+        }
+    });
+}
 
+function crossTask(taskId, isCrossedOut) {
+    var taskStatus;
+    // if isCrossedOut flag does NOT exists in indexOf() returns an index integer
+    // if !(isCrossedOut) then taskStatus = 0 meaning we don't cross it out!
+    if (isCrossedOut === -1) {
+        taskStatus = 0;
+    }
+    else {
+        taskStatus = 1;
+    }
+    var crossTask = {
+        taskid: taskId,
+        status: taskStatus
+    };
+  
+    $.ajax({
+        type: 'POST',
+        url: 'https://desktab.me/CheckTask',
+        data: crossTask,
+        success: function(data, textStatus, jqXHR) {
+            chrome.identity.getProfileUserInfo(function(identity) {
+                    var userInfo = { 
+                    username: identity.email
+                };
+                loadTasks(userInfo); 
+            });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(textStatus, errorThrown);
+        }
+    });
+}
 
+function addTask(email) {
+    var input = document.getElementById("form1") ;
+    var taskInput = {
+        username: email,
+        deadline: input.elements["year"].value + '-' + input.elements["month"].value + '-' + input.elements["day"].value,
+        description: input.elements["task"].value
+    };
+    $.ajax({
+        type: 'POST',
+        url: 'https://desktab.me/AddTask',
+        data: taskInput,
+        success: function (data, textStatus, jqXHR) {
+            chrome.identity.getProfileUserInfo(function(identity) {
+                    var userInfo = { 
+                    username: identity.email
+                };
+                loadTasks(userInfo);
+                $('#form1')[0].reset();
+            });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(textStatus, errorThrown);
+        }
+    });
+}
