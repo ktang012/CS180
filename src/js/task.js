@@ -46,7 +46,7 @@ function loadTasks(userInfo) {
                 
                 taskHtml += '<li> Due: ' + taskDeadline + '<br/>';
 
-                //This is terrible, I'm sorry
+                // This is terrible, I'm sorry
                 if (taskStatus === 1) {
                     var crossFlag = '_isCrossedOut';
                     crossId += crossFlag;
@@ -141,6 +141,11 @@ function crossTask(taskId, isCrossedOut) {
 
 function addTask(email) {
     var input = document.getElementById("form1") ;
+    
+    if (input.elements['task'].value == '') {
+        return;
+    }
+  
     var taskInput = {
         username: email,
         deadline: input.elements["year"].value + '-' + input.elements["month"].value + '-' + input.elements["day"].value,

@@ -1,16 +1,21 @@
 $(document).ready(function() {
     // To send messages to content script you MUST use tabs.sendMessage!!
     // Get active and current tab, send message to content script
-    chrome.tabs.query({
-        active: true,
-        currentWindow: true
-        },
-        function(tabs) {
-            chrome.tabs.sendMessage(
-                tabs[0].id,
-                { from: 'add_site', method: 'getDomainName' },
-                outputDomain); // our responseCallback
-    });
+    
+    // We want a slight delay such that the page is loaded before
+    // our popup is loaded so we can register events properly
+    setTimeout(function() {
+        chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            },
+            function(tabs) {
+                chrome.tabs.sendMessage(
+                    tabs[0].id,
+                    { from: 'add_site', method: 'getDomainName' },
+                    outputDomain); // our responseCallback
+            });
+    }, 1000);
 });
 
 function outputDomain(data) {
@@ -43,6 +48,19 @@ function addCurrentSite(currentDomain) {
                 // If we get a key error from server
                 if (data.error) {
                     alert("You've added this site already!");
+                }
+                else {
+                    var alertString = "Added the following site: " + currentDomain;
+                    alert(alertString);
+                    chrome.tabs.query({
+                        active: true,
+                        currentWindow: true
+                        },
+                        function(tabs) {
+                            chrome.tabs.sendMessage(
+                                tabs[0].id,
+                                { from: 'add_site', method: 'refreshPage' }); 
+                    });
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
