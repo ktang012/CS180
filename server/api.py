@@ -460,6 +460,39 @@ class GetListedSites(Resource):
         except:
             return { 'error': str(e) }
 
+class GetSiteTimeHistories(Resource):
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of SiteTimeHistory')
+            args = parser.parse_args()
+
+            _username = args['username']
+
+            conn = mysql.connect()
+
+            cursor = conn.cursor()
+            cursor.callproc('getSiteTimeHistories', args=[_username])
+            data = cursor.fetchall()
+
+            site_history_list = []
+            for i in data:
+                history = { 'owner': i[0],
+                            'domainName': i[1],
+                            'dailyTime_0': i[2],
+                            'dailyTime_1': i[3],
+                            'dailyTime_2': i[4],
+                            'dailyTime_3': i[5],
+                            'dailyTime_4': i[6],
+                            'dailyTime_5': i[7],
+                            'dailyTime_6': i[8] }
+
+                site_history_list.append(history)
+
+            return site_history_list
+
+        except:
+            return { 'error': str(e) }
 
 
 
@@ -540,7 +573,8 @@ api.add_resource(AddListedSite, '/ListedSite/AddListedSite')
 api.add_resource(EditListedSite, '/ListedSite/EditListedSite')
 api.add_resource(DeleteListedSite, '/ListedSite/DeleteListedSite')
 api.add_resource(GetASiteTimeHistory, '/ListedSite/GetASiteTimeHistory')
-api.add_resource(GetListedSites, 'ListedSite/GetListedSites')
+api.add_resource(GetListedSites, '/ListedSite/GetListedSites')
+api.add_resource(GetSiteTimeHistories, '/ListedSite/GetSiteTimeHistories')
 
 api.add_resource(SendEmail, '/SendEmail')
 
