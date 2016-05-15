@@ -14,24 +14,23 @@ function loadListedSites(userInfo) {
         data: userInfo,
         success: function(listedSites, textStatus, jqXHR) {
             var newHtml = '';
-            var timeCapForms = new Array();
             var timeCapButtons = new Array();
             var deleteButtons = new Array();
-            var checkBoxes = new Array();
 
-            var taskHtml = '';
-            taskHtml += '<tr>';
-            taskHtml += '<td> Status </td>';
-            taskHtml += '<td> Domain Name </td>';
-            taskHtml += '<td> Daily Time</td>';
-            taskHtml += '<td> Time Cap</td>';
-            taskHtml += '<td> Update</td>';
-            taskHtml += '<td> Delete </td>';                
-            taskHtml += '</tr>';
+            var siteHtml = '';
+            siteHtml += '<tr>';
+            siteHtml += '<td> Status </td>';
+            siteHtml += '<td> Domain Name </td>';
+            siteHtml += '<td> Daily Time </td>';
+            siteHtml += '<td> Time Cap </td>';
+            siteHtml += '<td> Update </td>';
+            siteHtml += '<td> Delete </td>';                
+            siteHtml += '</tr>';
             
-            newHtml += taskHtml;
-            taskHtml = '';
+            newHtml += siteHtml;
+            siteHtml = '';
             
+            // Construct HTML
             for (var i = 0; i < listedSites.length; ++i) {
                 var listedSiteOwner = listedSites[i].owner;
                 var listedSiteDomainName = listedSites[i].domainName;
@@ -41,38 +40,40 @@ function loadListedSites(userInfo) {
                 var listedSiteTimeCap = listedSites[i].timeCap;
 
                 // IMPORTANT: Since IDs in HTML cannot have '.', we replace it with '_'
-                var timeCapFormID = 'timeCapForm_' + listedSiteDomainName.replace(/\./g, '_');              
+                var trID = 'tr_' + listedSiteDomainName.replace(/\./g, '_');              
                 var timeCapButtonID = 'timeCapButton_' + listedSiteDomainName.replace(/\./g, '_');
                 var deleteButtonID = 'deleteButton_' + listedSiteDomainName.replace(/\./g, '_');
-                var checkBoxID = 'checkBox_' + listedSiteDomainName.replace(/\./g, '_');
                 
-                taskHtml += '<tr>';
-                taskHtml += '<td> <input type="checkbox" id=' + checkBoxID + '> </td>';
-                taskHtml += '<td id=' + listedSiteDomainName + '>' + listedSiteDomainName + '</td>';
-                taskHtml += '<td>' + listedSiteDailyTime + '</td>';
-                taskHtml += '<td><form id="'+ timeCapFormID;
-                taskHtml += '"><input type="text" name="new_time" value="';
-                taskHtml +=  listedSiteTimeCap + '"></input><form></td>';
-                taskHtml += '<td><button id=' + timeCapButtonID + '>Update</button></td>';
-                taskHtml += '<td><button id=' + deleteButtonID + '>Delete</button></td>';                
-                taskHtml += '</tr>';
+                siteHtml += '<tr id=' + trID + '>';
+                
+                if (listedSiteIsBlocked == 1) {
+                    siteHtml += '<td> <input type="checkbox" checked></input> </td>';
+                }
+                else {
+                    siteHtml += '<td> <input type="checkbox"></input> </td>';
+                }
+
+                siteHtml += '<td>' + listedSiteDomainName + '</td>';
+                siteHtml += '<td>' + listedSiteDailyTime + '</td>';
+                siteHtml += '<td><form><input type="text" name="new_time" ';
+                siteHtml += 'value="' + listedSiteTimeCap + '"></input></form></td>';
+                siteHtml += '<td><button id=' + timeCapButtonID + '>Update</button></td>';
+                siteHtml += '<td><button id=' + deleteButtonID + '>Delete</button></td>';                
+                siteHtml += '</tr>';
    
-                timeCapForms.push(timeCapFormID);
                 timeCapButtons.push(timeCapButtonID);
                 deleteButtons.push(deleteButtonID);
-                checkBoxes.push(checkBoxID);
 
-                newHtml += taskHtml;
-                taskHtml = '';
+                newHtml += siteHtml;
+                siteHtml = '';
             }
             
+            // Load HTML
             $('#sites_table').html(newHtml);
             
-            
+            // Bind to HTML
             // I'm so sorry for this code, please don't kill me
-            for (var i = 0; i < timeCapForms.length && i < timeCapButtons.length && 
-                 i < deleteButtons.length && i < checkBoxes.length; ++i) {
-     
+            for (var i = 0; i < timeCapButtons.length && i < deleteButtons.length; ++i) {
                 // First argument is the domainName we parse from the button id
                 // Second argument is the value of the checkbox, we first have to find our
                 // parent tr, table row, get that, then find our first td, the checkbox, in the row
@@ -95,16 +96,13 @@ function loadListedSites(userInfo) {
                     var timeCapInput = $(listedSiteForms).val();
                     
                     updateListedSite(this.id.replace(/timeCapButton_/g, '').replace(/_/g, '.'),
-                                     isChecked, timeCapInput);
+                                     isChecked, timeCapInput, listedSiteTR);
                 });
                  
                 $('#' + deleteButtons[i]).click(function() {
                     deleteListedSite(this.id.replace(/deleteButton_/g, '').replace(/_/g, '.'));
-                });
-                
-            }
-            
-            
+                });   
+            }    
         },
         error: function(jqXHR, textStatus, errorThrown) {
             alert(textStatus, errorThrown); 
@@ -112,14 +110,76 @@ function loadListedSites(userInfo) {
     });
 }
 
-function updateListedSite(domainName, isBlocked, timeCap) {
-    console.log(domainName, isBlocked, timeCap);
+function loadSiteRow(siteInfo, listedSitrTR) {
+
+}
+
+// This can be optimized to only reload that particular tr
+function updateListedSite(domainName, isBlocked, timeCap, listedSiteTR) {
+    console.log(domainName, isBlocked, timeCap, listedSiteTR);
+    console.log(listedSiteTR.id);
+  
+    if (timeCap.match(/[a-z]/i)) {
+        return;
+    }
+    
+    // Need to convert bool to int
+    if (isBlocked) {
+        isBlocked = 1;
+    }
+    else {
+        isBlocked = 0;
+    }
+    
+    chrome.identity.getProfileUserInfo(function(data) {
+        var listedSiteInfo = { 
+            username: data.email,
+            domainName: domainName,
+            isBlocked: isBlocked,
+            timeCap: parseInt(timeCap, 10)
+        };
+        console.log(listedSiteInfo);
+        $.ajax({
+            type: 'POST',
+            url: 'https://desktab.me/ListedSite/EditListedSite',
+            data: listedSiteInfo,
+            success: function(data, textStatus, jqXHR) {
+                chrome.identity.getProfileUserInfo(function(identity) {
+                    var userInfo = { 
+                        username: identity.email
+                    };
+                    loadListedSites(userInfo);
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+            
+            }
+        });
+    });
+    
 }
 
 function deleteListedSite(domainName) {
-
+    chrome.identity.getProfileUserInfo(function(data) {
+        var listedSiteInfo = { 
+            username: data.email,
+            domainName: domainName
+        };
+        $.ajax({
+            type: 'DELETE',
+            url: 'https://desktab.me/ListedSite/DeleteListedSite',
+            data: listedSiteInfo,
+            success: function(data, textStatus, jqXHR) {
+                chrome.identity.getProfileUserInfo(function(identity) {
+                    var userInfo = { 
+                        username: identity.email
+                    };
+                    loadListedSites(userInfo); 
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert(textStatus, errorThrown);
+            }       
+        });
+    });
 }
-
-
-
-
