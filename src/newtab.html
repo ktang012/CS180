@@ -77,6 +77,22 @@
 		<div class="overlay-dialogue">
 			<p align="center";> POP-UP 1 </p>
 				
+			<!--JS for listing site goes here-->
+			
+			<table id="sites_table" style="width:100%">
+				<!--tr>
+					<td id="">Jill</td>
+					<td>Smith</td> 
+					<td>50</td>
+				</tr>
+				
+				<tr>
+					<td>Jill</td>
+					<td>Smith</td> 
+					<td>50</td>
+				</tr!-->
+			</table>
+			
 			<label for="our-popup-1"> 
 					
 				<div class="close"> 
@@ -117,7 +133,7 @@
 	<label for="our-popup-2"> 
 		<div class = "lower_left">
 			
-			<h2> Lower Left</h2>
+			<h2> Email </h2>
 		</div>
 		
 	</label>
@@ -128,6 +144,42 @@
 			
 		<div class="overlay-dialogue">
 			<p align="center";> POP-UP 2 </p>
+			
+			<label for="send_email_popup"> 
+				<h2 align="center"> Send Email </h2>
+			</label>
+				<br />
+			<span>
+				<input type="checkbox" id="send_email_popup" class="smoosh" />
+				
+				<div class="overlay-dialogue">
+					<p align="center";> send_email_popup </p>
+				
+					<form id="send_email_form">
+							To: <br />
+							<input name="receiver" type="text" size="50"> <br />
+							<br />
+							Subject: <br />
+							<input name="sub" type="text" size="50"> <br />
+							<br />
+							Message: <br />
+							<textarea type="text" name="message" rows="10" cols="70"></textarea> <br />
+					
+							<button id="send_email"> <label for ="send_email_popup">Send</label></button>
+					</form>
+				
+					<label for="send_email_popup"> 
+					
+						<div class="close"> 
+						</div>
+						
+					</label>
+				</div>
+			</span>
+			
+			<label for="check_email_popup"> 
+				<h2 align="center"> Check Email </h2>
+			</label>
 			
 
 
@@ -216,6 +268,7 @@
     <script src="js/weather.js"></script>
     <script src="js/identity.js"></script>
     <script src="js/task.js"></script>
+    <script src="js/site_ui.js"></script>
 </body>
 
 </html>
