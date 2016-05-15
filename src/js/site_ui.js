@@ -123,19 +123,11 @@ function updateListedSite(domainName, isBlocked, timeCap, listedSiteTR) {
         return;
     }
     
-    // Need to convert bool to int
-    if (isBlocked) {
-        isBlocked = 1;
-    }
-    else {
-        isBlocked = 0;
-    }
-    
     chrome.identity.getProfileUserInfo(function(data) {
         var listedSiteInfo = { 
             username: data.email,
             domainName: domainName,
-            isBlocked: isBlocked,
+            isBlocked: isBlocked ? 1 : 0,
             timeCap: parseInt(timeCap, 10)
         };
         console.log(listedSiteInfo);
