@@ -1,9 +1,13 @@
 $(document).ready(function() {
-	$("#send_email").click(send_email);
 	chrome.identity.getProfileUserInfo(function(identity) {
         console.log("Logged in as", identity.email)
     });
     $('#email_ui').click(send_auth);
+    $("#send_email").click(send_email);
+    checkEmail();
+	setTimeout(function() {
+	    checkEmail();
+	}, 5000);
     
 });
 
@@ -31,7 +35,6 @@ function send_auth() {
 }
 
 function send_email() {
-    console.log("CLICKED!");
 	var input = document.getElementById("send_email_form");
 	var to = input.elements["receiver"].value;
 	var subject = input.elements["sub"].value;
@@ -59,6 +62,43 @@ function send_email() {
 	});
     
 };
+
+function checkEmail() {
+    $('#emails').html('<tr><td> Loading emails... <tr><td>');
+	$.ajax({
+		type: 'GET',
+		url: 'https://script.google.com/macros/s/AKfycbzL4jwfov5tWs3XpSTaEpE6O1dRno8By9rT_-9sBOmciePyZFWt/exec',
+		success: function(emails) {
+		    if (emails[0].from == undefined || emails[0].date == undefined || emails[0].message == undefined) {
+		        $('#emails').html('<tr><td> Error loading emails, refresh page or authorize reading script </td></tr>');
+		    }
+		    else {
+		        var newHtml = '';
+			    var emailHtml = '';
+
+                for( var i = 0; i < emails.length; ++i) {
+				    var emailFrom = emails[i].from;
+				    var emailDate = emails[i].date;
+				    var emailSubject = emails[i].subject;
+				    var emailMessage = emails[i].message;
+				
+				    emailHtml += '<tr> <td>From: ' + emailFrom + '</td></tr>';
+				    emailHtml += '<tr> <td>Date: ' + emailDate + '</td></tr>';
+				    emailHtml += '<tr> <td>Subject: ' + emailSubject + '</td></tr>';
+				    emailHtml += '<tr> <td>Message:' + emailMessage + '</td></tr>';
+				    emailHtml += '<tr> <td> =================================================<br /> </td></tr>';
+
+				    newHtml += emailHtml;
+                    emailHtml = '';
+			    }
+			    $('#emails').html(newHtml);
+		    }
+		},
+		error: function() {
+            console.log("Server error loading emails");
+        }
+	});
+}
 
 function showSendAuthPrompt() {
     var height = 500; var width = 654; 
