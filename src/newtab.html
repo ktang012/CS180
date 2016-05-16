@@ -78,7 +78,8 @@
 			<p align="center";> POP-UP 1 </p>
 				
 			<!--JS for listing site goes here-->
-			
+			<button id="overall_bar_graph"> Overall Stats </button>
+			<form><input type="checkbox" id="toggle_graphs" unchecked> Toggle Graphs </input></form>
 			<table id="sites_table" style="width:100%">
 				<!--tr>
 					<td id="">Jill</td>
@@ -92,6 +93,8 @@
 					<td>50</td>
 				</tr!-->
 			</table>
+			<div id="draw_graph"> </div>
+			<div id="bar_graph"> </div>
 			
 			<label for="our-popup-1"> 
 					
@@ -261,13 +264,14 @@
 	
 	</div>
 	
-	
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/jquery.simpleWeather.min.js"></script>
     <script src="js/weather.js"></script>
     <script src="js/identity.js"></script>
     <script src="js/task.js"></script>
     <script src="js/site_ui.js"></script>
     <script src="js/gmail.js"></script>
+    
 </body>
 
 </html>
