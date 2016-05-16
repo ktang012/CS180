@@ -1,7 +1,7 @@
 //oauth2 auth
 chrome.identity.getAuthToken(
 	{'interactive': true},
-	function(){
+	function() {
 	  //load Google's javascript client libraries
 		window.gapi_onload = authorize;
 		loadScript('https://apis.google.com/js/client.js');

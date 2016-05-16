@@ -77,6 +77,25 @@
 		<div class="overlay-dialogue">
 			<p align="center";> POP-UP 1 </p>
 				
+			<!--JS for listing site goes here-->
+			<button id="overall_bar_graph"> Overall Stats </button>
+			<form><input type="checkbox" id="toggle_graphs" unchecked> Toggle Graphs </input></form>
+			<table id="sites_table" style="width:100%">
+				<!--tr>
+					<td id="">Jill</td>
+					<td>Smith</td> 
+					<td>50</td>
+				</tr>
+				
+				<tr>
+					<td>Jill</td>
+					<td>Smith</td> 
+					<td>50</td>
+				</tr!-->
+			</table>
+			<div id="draw_graph"> </div>
+			<div id="bar_graph"> </div>
+			
 			<label for="our-popup-1"> 
 					
 				<div class="close"> 
@@ -117,7 +136,7 @@
 	<label for="our-popup-2"> 
 		<div class = "lower_left">
 			
-			<h2> Lower Left</h2>
+			<h2> Email </h2>
 		</div>
 		
 	</label>
@@ -128,6 +147,40 @@
 			
 		<div class="overlay-dialogue">
 			<p align="center";> POP-UP 2 </p>
+			
+			<button id="write_email"><label for ="send_email_popup"> Send Email </label></button>
+				<br />
+			<span>
+				<input type="checkbox" id="send_email_popup" class="smoosh" />
+				
+				<div class="overlay-dialogue">
+					<p align="center";> send_email_popup </p>
+				
+					<form id="send_email_form">
+							To: <br />
+							<input name="receiver" type="text" size="50"> <br />
+							<br />
+							Subject: <br />
+							<input name="sub" type="text" size="50"> <br />
+							<br />
+							Message: <br />
+							<textarea type="text" name="message" rows="10" cols="70"></textarea> <br />
+					
+					</form>
+					<button id="send_email"> <label for ="send_email_popup">Send</label></button>
+				
+					<label for="send_email_popup"> 
+					
+						<div class="close"> 
+						</div>
+						
+					</label>
+				</div>
+			</span>
+			
+			<label for="check_email_popup"> 
+				<h2 align="center"> Check Email </h2>
+			</label>
 			
 
 
@@ -153,11 +206,13 @@
 	<span>
 			
 		<input type="checkbox" id="our-popup-3" class="smoosh" />
-			s
-		<div class="overlay-dialogue" >
+			
+		<div class="overlay-dialogue" id="todo_list">
 			<h4 align="center";> TODO LIST</h4>
 			
-			<span id="1"><ul id="tasks" class="columns" data-columns="2"></ul></span>
+			<span id="task_list">
+			    <ul id="tasks" class="columns" data-columns="2"></ul>
+			</span>
 			
 			<label for="task_input_popup">
 				<div id="Add Task" class="add_task">
@@ -165,12 +220,12 @@
 				</div>
 			</label>
 			
-			<span>
+			<span id="add_task_form">
 				<input type="checkbox" id="task_input_popup" class="smoosh" />
 				<div class="overlay-dialogue">
 					<label for="task_input_popup"> 
 						
-						<div class="close"> 
+						<div class="close">
 						</div>
 							
 					</label>
@@ -185,7 +240,7 @@
 							day: <input name="day" type="text" size="2"> <br />
 						</form>
 						
-						<button id="save_task">Submit</button>
+						<button id="save_task"> <label for ="task_input_popup">Submit</label></button>
 						
 						<p id="demo"></p>
 						
@@ -209,11 +264,14 @@
 	
 	</div>
 	
-	
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/jquery.simpleWeather.min.js"></script>
     <script src="js/weather.js"></script>
     <script src="js/identity.js"></script>
     <script src="js/task.js"></script>
+    <script src="js/site_ui.js"></script>
+    <script src="js/gmail.js"></script>
+    
 </body>
 
 </html>

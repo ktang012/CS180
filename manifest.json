@@ -1,5 +1,5 @@
 {
-  "name": "CS180 Extension",
+  "name": "DeskTab",
   "description": "Productivity extension",
   "version": "1.1",
   "permissions": [
@@ -7,23 +7,32 @@
     "geolocation",
     "identity",
     "storage",
-    "http://cs180.no-ip.info/",
+    "https://desktab.me/",
     "https://*.yahooapis.com/*",
 	"browsingData",
 	"*://*.google.com/*",
-	"identity.email"
+	"identity.email",
+	"tabs",
+	"activeTab"
   ],
   "browser_action": {
       "default_title": "New Tab",
-      "default_icon": "src/img/icon.png"
+      "default_icon": "src/img/icon.png",
+      "default_popup": "src/dropdown.html"
   },
   "chrome_url_overrides" : {
     "newtab": "src/newtab.html"
   },
+  "content_scripts": [
+    {
+        "matches": ["*://*/*"],
+        "js": ["src/js/jquery-latest.min.js", "src/js/tracker.js"]
+    }
+  ],
   "background" : {
 	  "scripts" : ["google_api/base64.js", "google_api/background.js"]
   },
-  "content_security_policy": "script-src https://*.yahooapis.com 'unsafe-eval'; script-src https://*.google.com 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": "script-src https://*.yahooapis.com 'unsafe-eval' https://*.google.com 'unsafe-eval' https://www.gstatic.com; object-src 'self'",
   "manifest_version": 2,
   "oauth2": {
     "client_id": "174001115237-v7nkkladajlcekmc15fgqr8gekr44a6s.apps.googleusercontent.com",
@@ -33,5 +42,6 @@
 	  "https://www.googleapis.com/auth/gmail.compose",
 	  "https://www.googleapis.com/auth/drive"
     ]
-  }
+  },
+  "web_accessible_resources": [ "src/blocked.html" ]
 }
