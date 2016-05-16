@@ -11,7 +11,7 @@ $(document).ready(function() {
         $('#toggle_graphs').click(function() {
             $('#draw_graph').toggle();
         });
-        $('#overall_bar_graph').click(function() {
+        $('#toggle_bar_graph').click(function() {
             $('#bar_graph').toggle();
             displayBarGraph();
         });
@@ -290,9 +290,7 @@ function displayLineGraph(domainName) {
 
 function displayBarGraph() {
     google.charts.setOnLoadCallback(drawBasic);
-
 	function drawBasic() {
-		  
 		  chrome.identity.getProfileUserInfo(function(login) {
 			  var graphData = { username: login.email };
 			  					
@@ -305,12 +303,9 @@ function displayBarGraph() {
 			  		var size = Object.keys(data).length
 			  		graph.addColumn('string', 'Sites');
 			  		graph.addColumn('number', 'Time');
-			  		for (var i = 0; i < size; ++i)
-			  		{
-			  			
+			  		for (var i = 0; i < size; ++i) {
 			  			graph.addRows([
 			  			[data[i].domainName, data[i].dailyTime/60]]);
-			  	
 			  		}
 					var options = {
 				  		title: 'Time Spent on Each Flagged Website',
@@ -338,7 +333,7 @@ function displayBarGraph() {
 			  		alert('Error: Bar Graph');
 			  	}
 			});
-			}); 
+        }); 
 	}
 }
 
