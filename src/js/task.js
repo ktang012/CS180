@@ -19,11 +19,10 @@ function loadTasks(userInfo) {
             var newHtml = '';
             var monthName = ['January', 'February', 'March', 'April', 
                              'May', 'June', 'July', 'August',
-                             'September', 'October', 'November', 'December'];                 
+                             'September', 'October', 'November', 'December'];           
             var deleteButtons = new Array();
             var crossButtons = new Array();                     
             var taskHtml = '';
-            
             for (var i = 0; i < tasks.length; ++i) {
                 var taskDescription = tasks[i].description;
                 var taskDeadline = '';
@@ -33,11 +32,11 @@ function loadTasks(userInfo) {
                 }
                 else {
                     var taskDate = new Date(tasks[i].deadline);
-                    taskDeadline += monthName[taskDate.getMonth()];
+                    taskDeadline += monthName[taskDate.getUTCMonth()];
                     taskDeadline += ', ';
-                    taskDeadline += taskDate.getDay();
+                    taskDeadline += taskDate.getUTCDate();
                     taskDeadline += ' ';
-                    taskDeadline += taskDate.getFullYear();
+                    taskDeadline += taskDate.getUTCFullYear();
                 }
                 
                 var taskStatus = tasks[i].status
