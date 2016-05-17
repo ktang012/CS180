@@ -34,8 +34,8 @@ function loadListedSites(userInfo) {
             siteHtml += '<tr>';
             siteHtml += '<td> Status </td>';
             siteHtml += '<td> Domain Name </td>';
-            siteHtml += '<td> Daily Time </td>';
-            siteHtml += '<td> Time Cap </td>';
+            siteHtml += '<td> Daily Time (minutes) </td>';
+            siteHtml += '<td> Time Cap (minutes) </td>';
             siteHtml += '<td> Update </td>';
             siteHtml += '<td> Delete </td>';                
             siteHtml += '</tr>';
@@ -47,10 +47,10 @@ function loadListedSites(userInfo) {
             for (var i = 0; i < listedSites.length; ++i) {
                 var listedSiteOwner = listedSites[i].owner;
                 var listedSiteDomainName = listedSites[i].domainName;
-                var listedSiteDailyTime = listedSites[i].dailyTime;
+                var listedSiteDailyTime = Math.floor(listedSites[i].dailyTime/60);
                 var listedSiteBlockedTime = listedSites[i].blockedTime;
                 var listedSiteIsBlocked = listedSites[i].isBlocked;
-                var listedSiteTimeCap = listedSites[i].timeCap;
+                var listedSiteTimeCap = listedSites[i].timeCap / 60;
 
                 // IMPORTANT: Since IDs in HTML cannot have '.', we replace it with '_'
                 var trID = 'tr_' + listedSiteDomainName.replace(/\./g, '_');              
@@ -151,7 +151,7 @@ function updateListedSite(domainName, isBlocked, timeCap, listedSiteTR) {
             username: data.email,
             domainName: domainName,
             isBlocked: isBlocked ? 1 : 0,
-            timeCap: parseInt(timeCap, 10)
+            timeCap: parseInt(timeCap * 60, 10)
         };
         console.log(listedSiteInfo);
         $.ajax({
@@ -212,19 +212,20 @@ function displayPiGraph(domainName) {
                     success: function( data ) {
 					    var graph = new google.visualization.arrayToDataTable([
                                     ['Day', 'Time Spent'	],
-                                    ['Yesterday', data.dailyTime_0/60],
-                                    ['2 Days Ago', data.dailyTime_1/60],
-                                    ['3 Days Ago', data.dailyTime_2/60],
-                                    ['4 Days Ago', data.dailyTime_3/60],
-                                    ['5 Days Ago', data.dailyTime_4/60],
-                                    ['6 Days Ago', data.dailyTime_5/60],
-                                    ['7 Days Ago', data.dailyTime_6/60]
+                                    ['Yesterday', Math.floor(data.dailyTime_0/60)],
+                                    ['2 Days Ago', Math.floor(data.dailyTime_1/60)],
+                                    ['3 Days Ago', Math.floor(data.dailyTime_2/60)],
+                                    ['4 Days Ago', Math.floor(data.dailyTime_3/60)],
+                                    ['5 Days Ago', Math.floor(data.dailyTime_4/60)],
+                                    ['6 Days Ago', Math.floor(data.dailyTime_5/60)],
+                                    ['7 Days Ago', Math.floor(data.dailyTime_6/60)]
 					    ]);
 
 					    var options = {
-                            title: 'Time spent on ' + domainName.toUpperCase() + ' in the past 7 days',
+                            title: 'Time(minutes) spent on ' + domainName.toUpperCase() + ' in the past 7 days',
                             height: 250,
                             width: 750,
+                                                        
 					    };
 
                         var chart = new google.visualization.PieChart(document.getElementById('draw_graph'));
@@ -251,13 +252,13 @@ function displayLineGraph(domainName) {
                 success: function( data ) {
                     var graph = new google.visualization.arrayToDataTable([
                         ['Day', 'Time Spent'],
-                        ['Yesterday', data.dailyTime_0/60],
-                        ['2 Days Ago', data.dailyTime_1/60],
-                        ['3 Days Ago', data.dailyTime_2/60],
-                        ['4 Days Ago', data.dailyTime_3/60],
-                        ['5 Days Ago', data.dailyTime_4/60],
-                        ['6 Days Ago', data.dailyTime_5/60],
-                        ['7 Days Ago', data.dailyTime_6/60]
+                        ['Yesterday', Math.floor(data.dailyTime_0/60)],
+                        ['2 Days Ago', Math.floor(data.dailyTime_1/60)],
+                        ['3 Days Ago', Math.floor(data.dailyTime_2/60)],
+                        ['4 Days Ago', Math.floor(data.dailyTime_3/60)],
+                        ['5 Days Ago', Math.floor(data.dailyTime_4/60)],
+                        ['6 Days Ago', Math.floor(data.dailyTime_5/60)],
+                        ['7 Days Ago', Math.floor(data.dailyTime_6/60)]
 				    ]);
 
                     var options = {
@@ -305,7 +306,7 @@ function displayBarGraph() {
 			  		graph.addColumn('number', 'Time');
 			  		for (var i = 0; i < size; ++i) {
 			  			graph.addRows([
-			  			[data[i].domainName, data[i].dailyTime/60]]);
+			  			[data[i].domainName, Math.floor(data[i].dailyTime/60)]]);
 			  		}
 					var options = {
 				  		title: 'Time Spent on Each Flagged Website',
@@ -336,5 +337,4 @@ function displayBarGraph() {
         }); 
 	}
 }
-
 
