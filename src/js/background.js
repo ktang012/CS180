@@ -27,7 +27,7 @@ function nextBackground() {
 }
 
 
-setInterval(nextBackground, 18000);
+setInterval(nextBackground, 180000);
 
 header.css('background-image', backgrounds[current]);	
 header.css('background-size', '100% 1590%');

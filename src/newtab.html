@@ -115,7 +115,7 @@
 		<div>
 			<span>
 				<label for="event_delete_popup">
-				<div class="event_delete"> - Delete </div>
+				<div class="event_delete" id="view_event"> View </div>
 				</label>
 			</span>
 		</div>
@@ -128,21 +128,10 @@
 						
 						<div class="close"> 
 						</div>
-						
-						<form id="form_delete_event">
-							<br />
+						<br/>
+						<ul id="event_list">
 							
-							
-							Date: 
-							<br /><input name="d" type="text" size="4"> <br />
-							<br />
-						</form>
-						
-						<button id="delete_event">View</button>
-						
-						<table id="event_list">
-							
-						</table>	
+						</ul>	
 					</label>
 					
 				</div>
@@ -159,29 +148,44 @@
 		
 	<span>
 			
-		<input type="checkbox" id="our-popup-1" class="smoosh" />
+		<input type="checkbox" id="our-popup-1" class="smoosh-site1" />
 			
-		<div class="overlay-dialogue">
-			<p align="center";> POP-UP 1 </p>
+		<div class="overlay-dialogue-site1">
+			<h4 align="center";> Website Tracking </h4>
+			
+			
+			
+			<label for="graph_popup">
+				<div id="graph_div" class="delete_task">
+					Graphs
+				</div>
+			</label>
+			
+			<span>
+				<input type="checkbox" id="graph_popup" class="smoosh-site2" />
 				
+				<div class="overlay-dialogue-site2">
+					
+					<button id="toggle_bar_graph"> Overall Stats </button>
+			        <form><input type="checkbox" id="toggle_graphs" unchecked> Toggle Graphs </input></form>
+					<div id="draw_graph"> </div>
+			        <div id="bar_graph"> </div>
+					
+				
+					<label for="graph_popup"> 
+					
+						<div class="close"> 
+						</div>
+								
+					</label>
+				</div>
+				
+			</span>
+			
 			<!--JS for listing site goes here-->
-			<button id="toggle_bar_graph"> Overall Stats </button>
-			<form><input type="checkbox" id="toggle_graphs" unchecked> Toggle Graphs </input></form>
-			<table id="sites_table" style="width:100%">
-				<!--tr>
-					<td id="">Jill</td>
-					<td>Smith</td> 
-					<td>50</td>
-				</tr>
-				
-				<tr>
-					<td>Jill</td>
-					<td>Smith</td> 
-					<td>50</td>
-				</tr!-->
-			</table>
-			<div id="draw_graph"> </div>
-			<div id="bar_graph"> </div>
+			
+			<table id="sites_table" style="width:100%"> </table>
+		
 			
 			<label for="our-popup-1"> 
 					
