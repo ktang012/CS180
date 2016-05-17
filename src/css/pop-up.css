@@ -20,6 +20,26 @@ opacity: 0.95;
  
 }
 
+div.overlay-dialogue_event_add {
+
+opacity: 0.95;
+
+ position: absolute;
+ display: none;
+ height: 222px;
+ width: 222px;
+ 
+ top: 10px;
+ left: 10px;
+ 
+ background: #F4F2F2;
+ 
+ padding: 0px 15px 0px 15px;
+ overflow-y: auto;
+ animation: START 0.3s ease-in-out;
+ 
+}
+
 div.overlay-dialogue2 {
 
 
@@ -54,6 +74,11 @@ input[type=checkbox].smoosh2:checked ~ div.overlay-dialogue2 {
  z-index: 5005;
 }
 
+input[type=checkbox].smoosh_event_add:checked ~ div.overlay-dialogue_event_add {
+ display: block;
+ z-index: 5005;
+}
+
 .smoosh {
  display: none;
  line-height: 0;
@@ -68,6 +93,19 @@ input[type=checkbox].smoosh2:checked ~ div.overlay-dialogue2 {
 }
 
 .smoosh2 {
+ display: none;
+ line-height: 0;
+ margin: 0 0 0 0;
+ padding: 0 0 0 0;
+ color: transparent;
+ background: transparent;
+ border: none;
+ outline: none;
+ height: 0;
+ width: 0;
+}
+
+.smoosh_event_add {
  display: none;
  line-height: 0;
  margin: 0 0 0 0;

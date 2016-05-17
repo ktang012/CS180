@@ -32,6 +32,15 @@
 	<script src="js/jquery-latest.min.js" type="text/javascript"></script>
 	<script type ="text/javascript" language="javascript" src="js/background.js"></script>
 	
+	<link rel="stylesheet" href="jqwidgets/styles/jqx.base.css" type="text/css"/>
+	<script type="text/javascript" src="scripts/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="scripts/demos.js"></script>
+	<script type="text/javascript" src="jqwidgets/jqxcore.js"></script>
+	<script type="text/javascript" src="jqwidgets/jqxdatetimeinput.js"></script>
+	<script type="text/javascript" src="jqwidgets/jqxcalendar.js"></script>
+	<script type="text/javascript" src="jqwidgets/jqxtooltip.js"></script>
+	<script type="text/javascript" src="jqwidgets/globalization/globalize.js"></script>
+	
 </head>
 
 <body id="bootstrap-overrides">
@@ -63,10 +72,88 @@
 	</div>
 	
 	<!-- div upper left-->
+	
+	<div class="upper_left">
+		
+		<div id="jqxWidget"></div>
+		</div>
+		
+		<div>
+			<span>
+				<label for="event_add_popup">
+				<div class="event_add"> + Add </div>
+				</label>
+			</span>
+		</div>
+		
+		<span>
+				<input type="checkbox" id="event_add_popup" class="smoosh_event_add" />
+				<div class="overlay-dialogue_event_add">
+					
+					<label for="event_add_popup"> 
+						
+						<div class="close"> 
+						</div>
+						
+						<form id="form_add_event">
+							<br />
+							
+							Event: <br /><input name="event" type="text" size="20"> <br />
+							<br />
+							Date: 
+							<br /><input name="d" type="text" size="4"> <br />
+							<br />
+						</form>
+						
+						<button id="save_event">Submit</button>
+						
+					</label>
+					
+				</div>
+		</span>
+
+		<div>
+			<span>
+				<label for="event_delete_popup">
+				<div class="event_delete"> - Delete </div>
+				</label>
+			</span>
+		</div>
+		
+		<span>
+				<input type="checkbox" id="event_delete_popup" class="smoosh_event_add" />
+				<div class="overlay-dialogue_event_add">
+					
+					<label for="event_delete_popup"> 
+						
+						<div class="close"> 
+						</div>
+						
+						<form id="form_delete_event">
+							<br />
+							
+							
+							Date: 
+							<br /><input name="d" type="text" size="4"> <br />
+							<br />
+						</form>
+						
+						<button id="delete_event">View</button>
+						
+						<table id="event_list">
+							
+						</table>	
+					</label>
+					
+				</div>
+		</span>
+		
+	</div>
+	<!-- div lower middle-->
 		
 	<label for="our-popup-1"> 
-		<div class = "upper_left">
-			<h2> Site Tracking </h2>
+		<div class = "lower_middle">
+			<h2> Data </h2>
 		</div>
 	</label>
 		
@@ -134,7 +221,7 @@
 	<!-- div lower left-->
 		
 	<label for="our-popup-2"> 
-		<div id="email_ui" class = "lower_left">
+		<div class = "lower_left">
 			
 			<h2> Email </h2>
 		</div>
@@ -153,8 +240,8 @@
 					<div style="position: absolute;
 								top:40%;
 								bottom: 40%;
-								left: 7%;
-								right: 40;">
+								left: 0%;
+								right: 50%;">
 					<h1> Send Email </h1>
 					</div>
 				</label>
@@ -311,7 +398,7 @@
     <script src="js/task.js"></script>
     <script src="js/site_ui.js"></script>
     <script src="js/gmail.js"></script>
-    
+    <script src="js/widget.js"></script>
 </body>
 
 </html>
