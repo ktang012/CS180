@@ -85,7 +85,11 @@ $(document).ready(function() {
     chrome.storage.sync.get("username", function(data) {
         var userInfo = { username: data.username,
                          domainName: document.domain };
-        console.log(userInfo.username, "is on", userInfo.domainName);
+        getListedSiteAndUpdate(userInfo);
+        setInterval(function() {
+            getListedSiteAndUpdate(userInfo);
+        }, 1000);
+        /*
         $.ajax({
             type: 'GET',
             url: 'https://desktab.me/ListedSite/GetAListedSite',
@@ -107,8 +111,28 @@ $(document).ready(function() {
                 console.log(textStatus, errorThrown);
             }
        });
+       */
     });
 });
+
+function getListedSiteAndUpdate(userInfo) {
+    $.ajax({
+        type: 'GET',
+        url: 'https://desktab.me/ListedSite/GetAListedSite',
+        data: userInfo,
+        success: function(site) {
+            var listedSite = new ListedSite(site.owner, site.domainName,
+                                            site.dailyTime, site.blockedTime,
+                                            site.isBlocked, site.timeCap);
+            if (!(listedSite.domainName === undefined || listedSite.owner === undefined)) {
+                monitorSite(listedSite);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(textStatus, errorThrown);
+        }
+    });
+}
 
 // Called every second to update time on site and updating info in the database
 function monitorSite(site) {

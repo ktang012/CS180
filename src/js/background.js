@@ -16,7 +16,6 @@ $(document).ready(function() {
         header.css('background-image', backgrounds[current % backgrounds.length]);
     }
     setInterval(nextBackground, 180000);
-    
-    
+     
     header.css('background-image', backgrounds[current % backgrounds.length]);
 });
