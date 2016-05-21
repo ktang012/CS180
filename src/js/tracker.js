@@ -89,29 +89,6 @@ $(document).ready(function() {
         setInterval(function() {
             getListedSiteAndUpdate(userInfo);
         }, 1000);
-        /*
-        $.ajax({
-            type: 'GET',
-            url: 'https://desktab.me/ListedSite/GetAListedSite',
-            data: userInfo,
-            success: function(site) {
-                var listedSite = new ListedSite(site.owner, site.domainName, 
-                                                site.dailyTime, site.blockedTime,
-                                                site.isBlocked, site.timeCap);
-                // console.log(listedSite);
-                if (!(listedSite.domainName === undefined || listedSite.owner === undefined)) {
-                    console.log("Begin monitoring", listedSite.domainName);
-                    setInterval(function() {
-                        monitorSite(listedSite);
-                    }, 1000); // Sends POST every second
-                    listedSite.checkTimeCap();
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus, errorThrown);
-            }
-       });
-       */
     });
 });
 
