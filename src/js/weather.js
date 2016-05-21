@@ -6,6 +6,12 @@
 $(document).ready(function () {
     verifyGeolocation();
     loadSettings();
+    
+    $('#weather_input_location').hide();
+    
+    $('#weather_display').hover(function() {
+        $('#weather_input_location').show();
+    });
 
     $('#weather_onoff').change(function() {
         chrome.storage.sync.get('set_location', function(data) {
@@ -13,6 +19,7 @@ $(document).ready(function () {
             setWeather(result);
         });
     });
+
     $('#weather_input_location').keypress(function(pressedKey) {
         if (pressedKey.which === 13) {
             var data = $('#weather_input_location').val();
@@ -24,6 +31,7 @@ $(document).ready(function () {
             else if (data !== '' && isValidLocation(data)) {
                 setWeather(data);
             }
+            $('#weather_input_location').hide();
         }
     });
 });

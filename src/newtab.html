@@ -142,7 +142,7 @@
 		
 	<label for="our-popup-1"> 
 		<div class = "lower_middle">
-			<h2> Data </h2>
+			<h2> Websites </h2>
 		</div>
 	</label>
 		
@@ -152,7 +152,6 @@
 			
 		<div class="overlay-dialogue-site1">
 			<h4 align="center";> Website Tracking </h4>
-			
 			
 			
 			<label for="graph_popup">
@@ -167,7 +166,6 @@
 				<div class="overlay-dialogue-site2">
 					
 					<button id="toggle_bar_graph"> Overall Stats </button>
-			        <form><input type="checkbox" id="toggle_graphs" unchecked> Toggle Graphs </input></form>
 					<div id="draw_graph"> </div>
 			        <div id="bar_graph"> </div>
 					
@@ -204,16 +202,15 @@
             <div id="weather" style= "opacity: 1.0;">
                 <h2 id="weather_display"><img src=""> </img></h2>
                 <p id="weather_location"></p>
+                <div class="form-group" id="weather_location_input_display">
+                    <input type="text" class="form-control" id="weather_input_location">
+                </div>
                 <div class="onoffswitch">
                     <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="weather_onoff" checked>
                     <label class="onoffswitch-label" for="weather_onoff">
                         <span class="onoffswitch-inner"></span>
                         <span class="onoffswitch-switch"></span>
                     </label>
-                </div>
-                <div class="form-group" id="weather_location">
-                    <label for="location">Location:</label>
-                    <input type="text" class="form-control" id="weather_input_location">
                 </div>
             </div>
         </div>

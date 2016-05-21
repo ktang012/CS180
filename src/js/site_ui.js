@@ -1,19 +1,14 @@
 $(document).ready(function() {
     //Set it to be initially hidden for toggle()
-    $('#draw_graph').hide();
-    $('#bar_graph').hide();
+    displayOverallStatsBarGraph();
     chrome.identity.getProfileUserInfo(function(data) {
         var userInfo = { 
             username: data.email
         };
         loadListedSites(userInfo);
         google.charts.load('current', {packages: ['corechart']});
-        $('#toggle_graphs').click(function() {
-            $('#draw_graph').toggle();
-        });
         $('#toggle_bar_graph').click(function() {
-            $('#bar_graph').toggle();
-            displayBarGraph();
+            displayOverallStatsBarGraph();
         });
     });
 });
@@ -29,15 +24,16 @@ function loadListedSites(userInfo) {
             var deleteButtons = new Array();
             var piGraphButtons = new Array();
             var lineGraphButtons = new Array();
-
+            
+            var timeCapForms = new Array();
+            var blockCheckBoxes = new Array();
+            
             var siteHtml = '';
             siteHtml += '<tr>';
             siteHtml += '<td> Status </td>';
             siteHtml += '<td> Domain Name </td>';
-            siteHtml += '<td> Daily Time (minutes) </td>';
-            siteHtml += '<td> Time Cap (minutes) </td>';
-            siteHtml += '<td> Update </td>';
-            siteHtml += '<td> Delete </td>';                
+            siteHtml += '<td> Daily Time </td>';
+            siteHtml += '<td> Time Cap (minutes) </td>';                
             siteHtml += '</tr>';
             
             newHtml += siteHtml;
@@ -54,31 +50,37 @@ function loadListedSites(userInfo) {
 
                 // IMPORTANT: Since IDs in HTML cannot have '.', we replace it with '_'
                 var trID = 'tr_' + listedSiteDomainName.replace(/\./g, '_');              
-                var timeCapButtonID = 'timeCapButton_' + listedSiteDomainName.replace(/\./g, '_');
                 var deleteButtonID = 'deleteButton_' + listedSiteDomainName.replace(/\./g, '_');
                 var piGraphButtonID = 'piGraphButton_' + listedSiteDomainName.replace(/\./g, '_');
                 var lineGraphButtonID = 'lineGraphButton_' + listedSiteDomainName.replace(/\./g, '_');
+                
+                var timeCapFormID = 'timeCapForm_' + listedSiteDomainName.replace(/\./g, '_');
+                var blockCheckBoxID = 'blockCheckBox_' + listedSiteDomainName.replace(/\./g, '_');
+                
 
                 siteHtml += '<tr id=' + trID + '>';
                 
                 if (listedSiteIsBlocked == 1) {
-                    siteHtml += '<td> <input type="checkbox" checked></input> </td>';
+                    siteHtml += '<td> <input type="checkbox" id="' + blockCheckBoxID;
+                    siteHtml += '"checked></input> </td>';
                 }
                 else {
-                    siteHtml += '<td> <input type="checkbox"></input> </td>';
+                    siteHtml += '<td> <input type="checkbox" id="' + blockCheckBoxID;
+                    siteHtml += '"></input> </td>';
                 }
 
                 siteHtml += '<td>' + listedSiteDomainName + '</td>';
-                siteHtml += '<td>' + listedSiteDailyTime + '</td>';
-                siteHtml += '<td><form><input type="text" name="new_time" ';
-                siteHtml += 'value="' + listedSiteTimeCap + '"></input></form></td>';
-                siteHtml += '<td><button id=' + timeCapButtonID + '>Update</button></td>';
-                siteHtml += '<td><button id=' + deleteButtonID + '>Delete</button></td>';
-                siteHtml += '<td><button id=' + piGraphButtonID + '>Pie Graph</button></td>';
+                siteHtml += '<td>' + listedSiteDailyTime + ' minutes</td>';
+                siteHtml += '<td><input type="text" class="form-control" id="' + timeCapFormID + '"';
+                siteHtml += 'value="' + listedSiteTimeCap + '"></input></td>';
+                siteHtml += '<td><button class="glyphicon glyphicon-remove-sign" ';
+                siteHtml += 'id=' + deleteButtonID + '></button></td>';
+                siteHtml += '<td><button id=' + piGraphButtonID + '>Pie Chart</button></td>';
                 siteHtml += '<td><button id=' + lineGraphButtonID + '>Line Graph</button></td>';            
                 siteHtml += '</tr>';
-   
-                timeCapButtons.push(timeCapButtonID);
+                
+                timeCapForms.push(timeCapFormID);
+                blockCheckBoxes.push(blockCheckBoxID);
                 deleteButtons.push(deleteButtonID);
                 piGraphButtons.push(piGraphButtonID);
                 lineGraphButtons.push(lineGraphButtonID);
@@ -91,43 +93,45 @@ function loadListedSites(userInfo) {
             $('#sites_table').html(newHtml);
             
             // Bind to HTML
-            // I'm so sorry for this code, please don't kill me
-            for (var i = 0; i < timeCapButtons.length && i < deleteButtons.length && piGraphButtons.length; ++i) {
-                // First argument is the domainName we parse from the button id
-                // Second argument is the value of the checkbox, we first have to find our
-                // parent tr, table row, get that, then find our first td, the checkbox, in the row
-                // then we find the input value of it
-                // Third argument is the value we have in the forms field... it goes through
-                // a similar process just like the second argument
+            for (var i = 0;i < deleteButtons.length && piGraphButtons.length; ++i) {
                 
-                // The abomination in all its atrocity:
-                // for finding the checkbox
-                // $($($($(this).parents('tr').get(0)).find('td:first').get(0)).find('input').get(0)).is(':checked')
-                $('#' + timeCapButtons[i]).click(function() {
+                $('#' + timeCapForms[i]).keypress(function(e) {
+                    if (e.keyCode == 13) { // 'Enter'
+                        var timeCapInput = $(this).val();
+                        
+                        var listedSiteTR = $(this).parents('tr').get(0);
+                        var listedSiteFirstTD = $(listedSiteTR).find('td:first').get(0);
+                        var listedSiteCheckBox = $(listedSiteFirstTD).find('input').get(0);
+                        var isChecked = $(listedSiteCheckBox).is(':checked');
+                        
+                        updateListedSite(this.id.replace(/timeCapForm_/g, '').replace(/_/g, '.'),
+                                         isChecked, timeCapInput, listedSiteTR);
+                    
+                    }
+                });
+                
+                $('#' + blockCheckBoxes[i]).change(function() {
+                    var isChecked = $(this).is(':checked');
+
                     var listedSiteTR = $(this).parents('tr').get(0);
-                    
-                    var listedSiteFirstTD = $(listedSiteTR).find('td:first').get(0);
-                    var listedSiteCheckBox = $(listedSiteFirstTD).find('input').get(0);
-                    var isChecked = $(listedSiteCheckBox).is(':checked');
-                    
                     var listedSiteFourthTD = $(listedSiteTR).find('td:nth-child(4)').get(0);
                     var listedSiteForms = $(listedSiteFourthTD).find('input').get(0);
                     var timeCapInput = $(listedSiteForms).val();
-                    
-                    updateListedSite(this.id.replace(/timeCapButton_/g, '').replace(/_/g, '.'),
+                        
+                    updateListedSite(this.id.replace(/blockCheckBox_/g, '').replace(/_/g, '.'),
                                      isChecked, timeCapInput, listedSiteTR);
                 });
-                 
+     
                 $('#' + deleteButtons[i]).click(function() {
                     deleteListedSite(this.id.replace(/deleteButton_/g, '').replace(/_/g, '.'));
                 });
                 
                 $('#' + piGraphButtons[i]).click(function() {
-                    displayPiGraph(this.id.replace(/piGraphButton_/g, '').replace(/_/g, '.'));
+                    displayBasicPiGraph(this.id.replace(/piGraphButton_/g, '').replace(/_/g, '.'));
                 });
                 
                 $('#' + lineGraphButtons[i]).click(function() {
-                    displayLineGraph(this.id.replace(/lineGraphButton_/g, '').replace(/_/g, '.'));
+                    displayBasicLineGraph(this.id.replace(/lineGraphButton_/g, '').replace(/_/g, '.'));
                 });
             }    
         },
@@ -139,10 +143,8 @@ function loadListedSites(userInfo) {
 
 // This can be optimized to only reload that particular tr if anyone wants to do it, I passed in the tr
 function updateListedSite(domainName, isBlocked, timeCap, listedSiteTR) {
-    console.log(domainName, isBlocked, timeCap, listedSiteTR);
-    console.log(listedSiteTR.id);
-  
     if (timeCap.match(/[a-z]/i)) {
+        alert("Error: Expected digits");
         return;
     }
     
@@ -199,7 +201,7 @@ function deleteListedSite(domainName) {
     });
 }
 
-function displayPiGraph(domainName) {
+function displayBasicPiGraph(domainName) {
 	google.charts.setOnLoadCallback(drawChart); 
     function drawChart() {
         chrome.identity.getProfileUserInfo(function(login) {
@@ -213,12 +215,12 @@ function displayPiGraph(domainName) {
 					    var graph = new google.visualization.arrayToDataTable([
                                     ['Day', 'Time Spent'	],
                                     ['Yesterday', Math.floor(data.dailyTime_0/60)],
-                                    ['2 Days Ago', Math.floor(data.dailyTime_1/60)],
-                                    ['3 Days Ago', Math.floor(data.dailyTime_2/60)],
-                                    ['4 Days Ago', Math.floor(data.dailyTime_3/60)],
-                                    ['5 Days Ago', Math.floor(data.dailyTime_4/60)],
-                                    ['6 Days Ago', Math.floor(data.dailyTime_5/60)],
-                                    ['7 Days Ago', Math.floor(data.dailyTime_6/60)]
+                                    ['2 days ago', Math.floor(data.dailyTime_1/60)],
+                                    ['3 days ago', Math.floor(data.dailyTime_2/60)],
+                                    ['4 days ago', Math.floor(data.dailyTime_3/60)],
+                                    ['5 days ago', Math.floor(data.dailyTime_4/60)],
+                                    ['6 days ago', Math.floor(data.dailyTime_5/60)],
+                                    ['7 days ago', Math.floor(data.dailyTime_6/60)]
 					    ]);
 
 					    var options = {
@@ -239,7 +241,7 @@ function displayPiGraph(domainName) {
     }
 }
 
-function displayLineGraph(domainName) {
+function displayBasicLineGraph(domainName) {
     google.charts.setOnLoadCallback(drawLineGraph);
     function drawLineGraph() {
         chrome.identity.getProfileUserInfo(function(login) {
@@ -253,12 +255,12 @@ function displayLineGraph(domainName) {
                     var graph = new google.visualization.arrayToDataTable([
                         ['Day', 'Time Spent'],
                         ['Yesterday', Math.floor(data.dailyTime_0/60)],
-                        ['2 Days Ago', Math.floor(data.dailyTime_1/60)],
-                        ['3 Days Ago', Math.floor(data.dailyTime_2/60)],
-                        ['4 Days Ago', Math.floor(data.dailyTime_3/60)],
-                        ['5 Days Ago', Math.floor(data.dailyTime_4/60)],
-                        ['6 Days Ago', Math.floor(data.dailyTime_5/60)],
-                        ['7 Days Ago', Math.floor(data.dailyTime_6/60)]
+                        ['2 days ago', Math.floor(data.dailyTime_1/60)],
+                        ['3 days ago', Math.floor(data.dailyTime_2/60)],
+                        ['4 days ago', Math.floor(data.dailyTime_3/60)],
+                        ['5 days ago', Math.floor(data.dailyTime_4/60)],
+                        ['6 days ago', Math.floor(data.dailyTime_5/60)],
+                        ['7 days ago', Math.floor(data.dailyTime_6/60)]
 				    ]);
 
                     var options = {
@@ -289,7 +291,7 @@ function displayLineGraph(domainName) {
     }
 }
 
-function displayBarGraph() {
+function displayOverallStatsBarGraph() {
     google.charts.setOnLoadCallback(drawBasic);
 	function drawBasic() {
 		  chrome.identity.getProfileUserInfo(function(login) {
@@ -326,12 +328,12 @@ function displayBarGraph() {
 				  		},
 				  	};
 
-				  var chart = new google.visualization.BarChart(document.getElementById('bar_graph'));
+				  var chart = new google.visualization.BarChart(document.getElementById('draw_graph'));
 				  chart.draw(graph, options);
 		
 			  	},
 			  	error: function(jqXHR, textStatus, errorThrown) {
-			  		alert('Error: Bar Graph');
+			  		alert('Error: Overall stats: bar graph');
 			  	}
 			});
         }); 
