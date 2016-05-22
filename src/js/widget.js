@@ -16,25 +16,8 @@
 			$('#delete_event').click(function() {
 				deleteEvents(userInfo);
 			});
-		});
-		
-	  // Create Date objects.
-	  /*var date1 = new Date();
-	  var date2 = new Date();
-	  var date3 = new Date();
-	  date1.setDate(16);
-	  date2.setDate(15);
-	  date3.setDate(16);
-	  // Add special dates by invoking the addSpecialDate method.
-	  $("#jqxWidget").jqxCalendar('addSpecialDate', date1, '', 'Special Date1');
-	  $("#jqxWidget").jqxCalendar('addSpecialDate', date2, '', 'Special Date2');
-	  $("#jqxWidget").jqxCalendar('addSpecialDate', date3, '', 'Special Date3');
-	  
-	  */
-	  
-	  
-	  
-  });
+		}); 
+});
  
   function addEvent(email) {
 	var input = document.getElementById("form_add_event");
@@ -45,7 +28,6 @@
 	var d = input.elements["d"].value;
 	console.log(eventInfo);
     if (eventInfo == '') {
-		console.log('innn');
         return;
     }
 	  
@@ -56,7 +38,7 @@
 		  date: eventDate,
 		  description: eventInfo
 	  };
-	  console.log(eventDate);
+
 	  
     $.ajax({
         type: 'POST',
@@ -83,7 +65,7 @@ function SpecialEvent(userInfo) {
         url: 'https://desktab.me/Calendar/GetSpecialEvents',
         data: userInfo,
         success: function(Event) {	
-			console.log(Event);
+
 			for (var i = 0; i < Event.length; ++i){
 				var  strdate = Event[i].date.toString();
 				//console.log(Event[i]);
@@ -117,8 +99,7 @@ function loadEvents (userInfo){
 			var monthName = ['January', 'February', 'March', 'April', 
 				 'May', 'June', 'July', 'August',
 				 'September', 'October', 'November', 'December']; 
-			console.log(Event.length);
-			console.log(Event);
+
 			for (var i = 0; i < Event.length; ++i) {
                 var eventDescription = Event[i].description;
 				var eventSTR = new Date(Event[i].date);
@@ -129,16 +110,23 @@ function loadEvents (userInfo){
 				eventDate += ' ';
 				eventDate += eventSTR.getFullYear();
 				var eventID = Event[i].event_id;
-				console.log( Event[i]);
+
 				var deleteId = 'delete_' + Event[i].event_id.toString();
 				
-				eventHTML += '<li> Due: ' + eventDate + '<br/>';
-				eventHTML += eventDescription + '</a></li>';
-				eventHTML += '<li> <button id=' + deleteId + '> Delete </button></li>';
+				eventHTML += '<tr>';
+				eventHTML += '<td width="70%"> Date:' +eventDate + '</td>';
+				eventHTML += '<td width="30%"> <button id=' + deleteId + ' class="task_buttons">Delete </button></td>';
+				eventHTML += '</tr>';
+				
+				eventHTML += '<tr>';
+				eventHTML += '<td style="border-bottom: 1px solid #ddd;">'+ eventDescription + '</td>';
+				eventHTML += '<td style="border-bottom: 1px solid #ddd;"> </td>';
+				eventHTML += '</tr>';
+				
 				
 				deleteButtons.push(deleteId);
 				
-				console.log(eventHTML);
+
 				
 				newHtml += eventHTML;
                 eventHTML = '';

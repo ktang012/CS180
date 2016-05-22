@@ -81,7 +81,7 @@
 		<div>
 			<span>
 				<label for="event_add_popup">
-				<div class="event_add"> + Add </div>
+				<div class="event_add"> + Add  </div>
 				</label>
 			</span>
 		</div>
@@ -93,11 +93,12 @@
 					<label for="event_add_popup"> 
 						
 						<div class="close"> 
+							×
 						</div>
 						
+						<h4 align="center" > Event Info </h4>
+						<div id="A_event">
 						<form id="form_add_event">
-							<br />
-							
 							Event: <br /><input name="event" type="text" size="20"> <br />
 							<br />
 							Date: 
@@ -105,8 +106,8 @@
 							<br />
 						</form>
 						
-						<button id="save_event">Submit</button>
-						
+						<button id="save_event" class="submit_button">Submit</button>
+						</div>
 					</label>
 					
 				</div>
@@ -122,16 +123,19 @@
 		
 		<span>
 				<input type="checkbox" id="event_delete_popup" class="smoosh_event_add" />
-				<div class="overlay-dialogue_event_add">
+				<div class="overlay-dialogue_event_add" style="text-align:center;">
 					
 					<label for="event_delete_popup"> 
 						
 						<div class="close"> 
+							×
 						</div>
-						<br/>
-						<ul id="event_list">
+						
+						<h4> Event List </h4>
+						
+						<table id="event_list" width="95%" style="text-align:center;">
 							
-						</ul>	
+						</table>	
 					</label>
 					
 				</div>
@@ -142,7 +146,7 @@
 		
 	<label for="our-popup-1"> 
 		<div class = "lower_middle">
-			<h2> Websites </h2>
+			<h2> <a> Data </a> </h2>
 		</div>
 	</label>
 		
@@ -151,11 +155,12 @@
 		<input type="checkbox" id="our-popup-1" class="smoosh-site1" />
 			
 		<div class="overlay-dialogue-site1">
-			<h4 align="center";> Website Tracking </h4>
+			<h4 align="center"> Website Tracking </h4>
+			
 			
 			
 			<label for="graph_popup">
-				<div id="graph_div" class="delete_task">
+				<div id="graph_div" class="graph_button">
 					Graphs
 				</div>
 			</label>
@@ -165,7 +170,16 @@
 				
 				<div class="overlay-dialogue-site2">
 					
-					<button id="toggle_bar_graph"> Overall Stats </button>
+					<br />
+					<button class="overall_stats_button" id="toggle_bar_graph" style="position:absolute; left:10px;"> Overall Stats </button>
+			        
+					<h4 style="float:left;"> &nbsp; &nbsp; &nbsp;</h4>
+					<form style="position:absolute; left:130px;">
+						<input type="checkbox" id="toggle_graphs" unchecked> Toggle Graphs 
+						</input>
+					</form>
+					<br />
+					<br />
 					<div id="draw_graph"> </div>
 			        <div id="bar_graph"> </div>
 					
@@ -173,6 +187,7 @@
 					<label for="graph_popup"> 
 					
 						<div class="close"> 
+							×
 						</div>
 								
 					</label>
@@ -188,6 +203,7 @@
 			<label for="our-popup-1"> 
 					
 				<div class="close"> 
+					×
 				</div>
 						
 			</label>
@@ -202,15 +218,16 @@
             <div id="weather" style= "opacity: 1.0;">
                 <h2 id="weather_display"><img src=""> </img></h2>
                 <p id="weather_location"></p>
-                <div class="form-group" id="weather_location_input_display">
-                    <input type="text" class="form-control" id="weather_input_location">
-                </div>
                 <div class="onoffswitch">
                     <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="weather_onoff" checked>
                     <label class="onoffswitch-label" for="weather_onoff">
                         <span class="onoffswitch-inner"></span>
                         <span class="onoffswitch-switch"></span>
                     </label>
+                </div>
+                <div class="form-group" id="weather_location">
+                    <label for="location">Location:</label>
+                    <input type="text" class="form-control" id="weather_input_location">
                 </div>
             </div>
         </div>
@@ -222,22 +239,28 @@
 	<!-- div lower left-->
 		
 	<label for="our-popup-2"> 
-		<div class = "lower_left">
+		<div class = "lower_left" id="email_ui">
 			
-			<h2> Email </h2>
+			<h2> <a color="white" >Email</a> </h2>
 		</div>
 		
 	</label>
 	
 	<span>
 			
-		<input type="checkbox" id="our-popup-2" class="smoosh" />
+		<input type="checkbox" id="our-popup-2" class="smoosh_email" />
 			
-		<div class="overlay-dialogue">
-			<h3 align="center";> Email Functions </h3>
+		<div class="overlay-dialogue_email">
+			<h4 align="center";> Email Functions </h4>
 			
-			<button id="write_email"  style="width:48%;height:70%; float:left;">
-				<label for ="send_email_popup" style="width:100%;height:100%; background-color:#66ccff;">
+			<br />
+			<button id="write_email"  style="	width:48%;
+												height:70%; 
+												float:left; 
+												border-radius:5px;
+												background-color:#E9EAF2;">
+												
+				<label for ="send_email_popup" style="width:100%;height:100%;">
 					<div style="position: absolute;
 								top:40%;
 								bottom: 40%;
@@ -252,8 +275,9 @@
 				<input type="checkbox" id="send_email_popup" class="smoosh" />
 				
 				<div class="overlay-dialogue">
-					<p align="center";> send_email_popup </p>
-				
+					<h4 align="center";> Email Details </h4>
+					
+					<div id="S_email">
 					<form id="send_email_form">
 							To: <br />
 							<input name="receiver" type="text" size="50"> <br />
@@ -265,19 +289,26 @@
 							<textarea type="text" name="message" rows="10" cols="70"></textarea> <br />
 					
 					</form>
-					<button id="send_email"> <label for ="send_email_popup">Send</label></button>
-			
+					<button id="send_email" class="submit_button"> <label for ="send_email_popup">Send</label></button>
+					</div>
 					<label for="send_email_popup"> 
 					
 						<div class="close"> 
+							×
 						</div>
 						
 					</label>
 				</div>
 			</span>
-			
-			<button id="read_email" style="float:right; width:48%;height:70%;">
-				<label for ="read_email_popup" style="width:100%;height:100%; background-color:pink;">
+		
+		
+		
+			<button id="read_email" style="	float:right; 
+											width:48%;
+											height:70%;
+											border-radius:5px;
+											background-color:#E9EAF2;">
+				<label for ="read_email_popup" style="width:100%;height:100%;">
 					<div style="position: absolute;
 								top:40%;
 								bottom: 40%;
@@ -288,33 +319,55 @@
 				</label>
 			</button>
 			
-			
-			
-			
-			
 			<br />
 			<span>
-				<input type="checkbox" id="read_email_popup" class="smoosh" />
+				<input type="checkbox" id="read_email_popup" class="smoosh_read_email_1"/>
 				
-				<div class="overlay-dialogue">
-					<p align="center";> read_email_popup </p>
+				<div class="overlay-dialogue_read_email_1" style="padding:35px;">
 					
-					<!--ul id="emails"></ul-->
-					<table id="emails"> </table>
-					<label for="read_email_popup"> 
-					
-						<div class="close"> 
-						</div>
+					<table id="emails" width="95%"> </table>
 						
+						<label for ="read_email_popup_2">
+							<div  class="read_email_button">
+								Read Email
+							</div>
+						</label>
+						
+						<span>
+							<input type="checkbox" id="read_email_popup_2" class="smoosh_read_email_2"/>
+							
+							<div class="overlay-dialogue_read_email_2">
+								<h4 align="center";> Email Details </h4>
+								
+								<div id="individual_email">
+									Please Pick an email to read.
+								</div>
+								
+								<label for="read_email_popup_2"> 
+									<div class="close"> 
+										×
+									</div>
+								</label>
+							</div>
+						</span>
+					
+					
+					<label for="read_email_popup"> 
+						<div class="close"> 
+							×
+						</div>
 					</label>
+				
+				
 				</div>
 			</span>
-			
+		
 
 
 			<label for="our-popup-2"> 
 					
 				<div class="close"> 
+					×
 				</div>
 						
 			</label>
@@ -326,7 +379,7 @@
 	<!-- div lower right-->
 	<label for="our-popup-3"> 
 		<div class = "lower_right">
-			<h2>Todo</h2>
+			<h2> <a> Todo </a> </h2>
 		</div>
 	</label>
 	
@@ -338,7 +391,7 @@
 		<div class="overlay-dialogue" id="todo_list">
 			<h4 align="center";> TODO LIST</h4>
 			
-			<span id="task_list">
+			<span id="task_list" >
 			    <ul id="tasks" class="columns" data-columns="2"></ul>
 			</span>
 			
@@ -354,6 +407,7 @@
 					<label for="task_input_popup"> 
 						
 						<div class="close">
+							×
 						</div>
 							
 					</label>
@@ -361,14 +415,17 @@
 					<div id="APISubmit">
 		
 						<form id="form1">
+							<h4 align="center" > Task Informations </h4>
+							<br />
 							Task: <input name="task" type="text" size="50"> <br />
+							<br />
 							Due Date: <br />
-							year: <input name="year" type="text" size="4"> <br />
-							month: <input name="month" type="text" size="2"> <br />
-							day: <input name="day" type="text" size="2"> <br />
+							Year: &#8202; &nbsp; &nbsp;<input name="year" type="text" size="6"> <br />
+							Month: &nbsp;<input name="month" type="text" size="6"> <br />
+							Day: &nbsp; &nbsp; &nbsp;<input name="day" type="text" size="6"> <br />
 						</form>
-						
-						<button id="save_task"> <label for ="task_input_popup">Submit</label></button>
+						<br />
+						<button id="save_task" class="submit_button"> <label for ="task_input_popup">Submit</label></button>
 						
 						<p id="demo"></p>
 						
@@ -382,6 +439,7 @@
 			<label for="our-popup-3"> 
 					
 				<div class="close"> 
+					×
 				</div>
 						
 			</label>

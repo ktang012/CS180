@@ -43,7 +43,8 @@ function loadTasks(userInfo) {
                 var deleteId = 'delete_' + tasks[i].taskid.toString(); // for delete button
                 var crossId = 'cross_' + tasks[i].taskid.toString(); // for (un)crossing a task
                 
-                taskHtml += '<li> Due: ' + taskDeadline + '<br/>';
+				
+                taskHtml += '<li style="border-bottom: 1px solid #ddd;"> Due: ' + taskDeadline + '<br/>';
 
                 // This is terrible, I'm sorry
                 if (taskStatus === 1) {
@@ -57,7 +58,7 @@ function loadTasks(userInfo) {
                     taskHtml += taskDescription + '</a></li>';
                 }
                 
-                taskHtml += '<li> <button id=' + deleteId + '> Delete </button></li>';
+                taskHtml += '<li><button id=' + deleteId + ' style="width:60px; height:40px;" class="delete_button"> Delete </button></li>';
 
                 deleteButtons.push(deleteId);
                 crossButtons.push(crossId);

@@ -1,63 +1,3 @@
-/*
-    Overview:
-        ListedSite objects are used to track and block sites accordingly.
-        SiteTimeHistory objects are used to represent a ListedSite object's
-        history.
-        
-    ListedSite object:
-        A ListedSite object contains all the information needed to monitor
-        a site the user has listed.
-        owner is the user that owns the ListedSite.
-        domainName is the domain name of the site to be tracked/blocked.
-        dailyTime is the elapsed time spent on a site, in seconds, for the day.
-        blockedtime is the elapsed time spent on site while isBlocked is true.
-        isBlocked distinguished blocked sites from tracked sites. We block blocked sites.
-        timeCap is the amount of time, in seconds, a user can spend on the site before it
-        gets blocked.
-        
-    Getting a ListedSite:
-        We first send our current domain name to our server, the server will
-        see if the domain name is listed for that user. If it is, the server
-        will reply with the corresponding ListedSite object and begin monitoring.
-        
-    Monitoring a ListedSite:
-        Every second we will update our fields accordingly and then sending a
-        request to the server to do the same. If the request is NOT successful, we
-        will not keep any changes on the changes on our client. If a site is a blocked site,
-        the site will be blocked when blockedTime >= timeCap.
-        
-        While monitoring a site, there are two states a ListedSite can be, isBlocked or 
-        is NOT blocked. If isBlocked, then both dailyTime and blockedTime will
-        be incremented. Else if !isBlocked, only dailyTime will be incremented. 
-        
-        Note: When the user blocks a site and unblocks it, the value of blockedTime
-        remains wherever it was left off at. It will be set back to zero similar
-        to dailyTime
-        
-    ListedSite objects in MySQL:
-        A user can own multiple or none ListedSite objects. The objects will be identified by
-        their owner, and domain name. Each ListedSite object is associated with a
-        SiteTimeHistory object. In addition, ListedSite.dailyTime and ListedSite.blockedTime
-        will be set to 0 every 24 hours, see SiteTimeHistory for more details.
-    
-    SiteTimeHistory object:
-        Similar to a ListedSite object,  but keeps track of the history of ListedSite objects.
-        It is for the most part a static object rather than a dynamic object which makes
-        the interface much more easier to use without having to account for uncalled changes
-        when using this object. SiteTimeHistory objects should be immutable in the frontend.
-        
-    SiteTimeHistory objects in MySQL:
-        SiteTimeHistory objects will be updated only in the MySQL server. Every 24 hours,
-        every SiteTimeHistory.dailyHistoryTime and ListedSite.dailyTime
-        will be updated as the following:
-            dailyHistoryTime[X] = dailyHistoryTime[X-1]
-            dailyHistoryTime[X-1] = dailyHistoryTime[X-2]
-            ......
-            dailyHistoryTIme[1] = dailyHistoryTime[0]
-            dailyHistoryTime[0] = listedSiteObject.dailyTime
-            listedSiteObject.dailyTime = 0
-*/
-
 $(document).ready(function() {
     // Set up listeners for messages
     
@@ -80,17 +20,51 @@ $(document).ready(function() {
         if (message.from == 'add_site' && message.method == 'refreshPage') {
             location.reload();
         }
-    });
+    });     
     
     chrome.storage.sync.get("username", function(data) {
         var userInfo = { username: data.username,
                          domainName: document.domain };
+        
+        
+                                          
+        var activityStatus = 0;
+        $(document).mousemove(function(event) {
+            console.log("lol");
+        });
+                         
+        window.onbeforeunload = function() {
+            windowClose(userInfo, activityStatus);
+            //return false;
+        };
+        
         getListedSiteAndUpdate(userInfo);
         setInterval(function() {
             getListedSiteAndUpdate(userInfo);
         }, 1000);
     });
 });
+
+function windowClose(userInfo, u) {
+    console.log("userInfo:", userInfo);
+}
+
+function idleUserDetection(idleStatus, idleTime) {
+    $(this).mousemove(function(e) {
+        var storedIdleTime = idleTime;
+        idleTime = 0;
+        idleStatus = false;
+        // Get last updated ListedSite object R from server
+        // Compare the two, update R on server according to current listedSite  
+        // Resume sending requests to server
+    });
+    
+    $(this).keypress(function(e) {
+        var storedIdleTime = idleTime;
+        idleTime = 0;
+        idleStatus = false;
+    });
+}
 
 function getListedSiteAndUpdate(userInfo) {
     $.ajax({
@@ -159,7 +133,6 @@ function blockSite() {
 
 // ListedSite and SiteTimeHistory objects (or similar objects) should be used in the 
 // UI of the extension for consistency
-
 function ListedSite(owner, domainName, dailyTime, blockedTime, isBlocked, timeCap) {
     this.owner = owner;
     this.domainName = domainName;

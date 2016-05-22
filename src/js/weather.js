@@ -6,8 +6,6 @@
 $(document).ready(function () {
     verifyGeolocation();
     loadSettings();
-    
-    $('#weather_input_location').hide();
 
     $('#weather_onoff').change(function() {
         chrome.storage.sync.get('set_location', function(data) {
@@ -15,7 +13,6 @@ $(document).ready(function () {
             setWeather(result);
         });
     });
-
     $('#weather_input_location').keypress(function(pressedKey) {
         if (pressedKey.which === 13) {
             var data = $('#weather_input_location').val();
@@ -27,7 +24,6 @@ $(document).ready(function () {
             else if (data !== '' && isValidLocation(data)) {
                 setWeather(data);
             }
-            $('#weather_input_location').hide();
         }
     });
 });
@@ -95,12 +91,8 @@ function loadWeather(location, woeid, unit) {
         success: function(weather) {
             var html = '<h2>' + weather.temp + '&deg;' + weather.units.temp;
             html += '<img src="' + weather.thumbnail + '"></img></h2>';
-            html += '<h5 id="location_display">' + weather.city + ', ' + weather.region + ' - ' + weather.country + '</h5>';
+            html += '<h5>' + weather.city + ', ' + weather.region + ' - ' + weather.country + '</h5>';
             $('#weather_display').html(html);
-            
-            $('#location_display').hover(function() {
-                $('#weather_input_location').show();
-            });
         },
         error: function(error) {
             console.log("Failed to load weather");
