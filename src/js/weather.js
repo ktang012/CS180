@@ -6,7 +6,13 @@
 $(document).ready(function () {
     verifyGeolocation();
     loadSettings();
-
+    $('#weather_input_location').hide();
+    $('#weather_location').hover(function() {
+        $('#weather_input_location').show();
+    });
+    $('#weather_input_location').mouseout(function() {
+        $('#weather_input_location').hide();
+    });
     $('#weather_onoff').change(function() {
         chrome.storage.sync.get('set_location', function(data) {
             var result = data.set_location;
@@ -91,8 +97,9 @@ function loadWeather(location, woeid, unit) {
         success: function(weather) {
             var html = '<h2>' + weather.temp + '&deg;' + weather.units.temp;
             html += '<img src="' + weather.thumbnail + '"></img></h2>';
-            html += '<h5>' + weather.city + ', ' + weather.region + ' - ' + weather.country + '</h5>';
             $('#weather_display').html(html);
+            html = '<h5>' + weather.city + ', ' + weather.region + ' - ' + weather.country + '</h5>';
+            $('#weather_location').html(html);
         },
         error: function(error) {
             console.log("Failed to load weather");

@@ -1,7 +1,5 @@
 $(document).ready(function() {
-    //Set it to be initially hidden for toggle()
-    $('#draw_graph').hide();
-    $('#bar_graph').hide();
+    displayOverallStatsBarGraph();
     chrome.identity.getProfileUserInfo(function(data) {
         var userInfo = { 
             username: data.email
@@ -9,11 +7,7 @@ $(document).ready(function() {
         loadListedSites(userInfo);
         google.charts.load('current', {packages: ['corechart']});
         $('#toggle_graphs').click(function() {
-            $('#draw_graph').toggle();
-        });
-        $('#toggle_bar_graph').click(function() {
-            $('#bar_graph').toggle();
-            displayBarGraph();
+            displayOverallStatsBarGraph();
         });
     });
 });
@@ -126,11 +120,11 @@ function loadListedSites(userInfo) {
                 });
                 
                 $('#' + piGraphButtons[i]).click(function() {
-                    displayPiGraph(this.id.replace(/piGraphButton_/g, '').replace(/_/g, '.'));
+                    displayBasicPiGraph(this.id.replace(/piGraphButton_/g, '').replace(/_/g, '.'));
                 });
                 
                 $('#' + lineGraphButtons[i]).click(function() {
-                    displayLineGraph(this.id.replace(/lineGraphButton_/g, '').replace(/_/g, '.'));
+                    displayBasicLineGraph(this.id.replace(/lineGraphButton_/g, '').replace(/_/g, '.'));
                 });
             }    
         },
@@ -202,7 +196,7 @@ function deleteListedSite(domainName) {
     });
 }
 
-function displayPiGraph(domainName) {
+function displayBasicPiGraph(domainName) {
 	google.charts.setOnLoadCallback(drawChart); 
     function drawChart() {
         chrome.identity.getProfileUserInfo(function(login) {
@@ -242,7 +236,7 @@ function displayPiGraph(domainName) {
     }
 }
 
-function displayLineGraph(domainName) {
+function displayBasicLineGraph(domainName) {
     google.charts.setOnLoadCallback(drawLineGraph);
     function drawLineGraph() {
         chrome.identity.getProfileUserInfo(function(login) {
@@ -292,7 +286,7 @@ function displayLineGraph(domainName) {
     }
 }
 
-function displayBarGraph() {
+function displayOverallStatsBarGraph() {
     google.charts.setOnLoadCallback(drawBasic);
 	function drawBasic() {
 		  chrome.identity.getProfileUserInfo(function(login) {
@@ -329,7 +323,7 @@ function displayBarGraph() {
 				  		},
 				  	};
 
-				  var chart = new google.visualization.BarChart(document.getElementById('bar_graph'));
+				  var chart = new google.visualization.BarChart(document.getElementById('draw_graph'));
 				  chart.draw(graph, options);
 		
 			  	},

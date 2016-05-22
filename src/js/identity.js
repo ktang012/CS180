@@ -1,12 +1,7 @@
 $(document).ready(function() {
 	chrome.identity.getProfileUserInfo(function(token) {
-		if (token.email == '' || token.email == undefined || token.email == null) {
-		    
-		    
-		    chrome.identity.getAuthToken({'interactive': true}, function() {
-		        alert("LOG IN PLZ");
-		    });
-		    
+		if (token.email == '' || token.email == undefined || token.email == null) {s	    
+		    chrome.identity.getAuthToken({'interactive': true}); 
 		}
 		else {
 		    var login = {
