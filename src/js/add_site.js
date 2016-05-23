@@ -15,7 +15,7 @@ $(document).ready(function() {
                     { from: 'add_site', method: 'getDomainName' },
                     outputDomain); // our responseCallback
             });
-    }, 1000);
+    }, 250);
 });
 
 function outputDomain(data) {

@@ -30,10 +30,6 @@ function loadListedSites(userInfo) {
             siteHtml += '<td> Domain Name </td>';
             siteHtml += '<td> Daily Time (minutes) </td>';
             siteHtml += '<td> Time Cap (minutes) </td>';
-            siteHtml += '<td> Update </td>';
-            siteHtml += '<td> Delete </td>';
-			siteHtml += '<td> Pie Graph </td>'; 
-			siteHtml += '<td> Line Graph </td>'; 
             siteHtml += '</tr>';
             
 			siteHtml += '<br />';
@@ -210,16 +206,16 @@ function displayBasicPiGraph(domainName) {
 					    var graph = new google.visualization.arrayToDataTable([
                                     ['Day', 'Time Spent'	],
                                     ['Yesterday', Math.floor(data.dailyTime_0/60)],
-                                    ['2 Days Ago', Math.floor(data.dailyTime_1/60)],
-                                    ['3 Days Ago', Math.floor(data.dailyTime_2/60)],
-                                    ['4 Days Ago', Math.floor(data.dailyTime_3/60)],
-                                    ['5 Days Ago', Math.floor(data.dailyTime_4/60)],
-                                    ['6 Days Ago', Math.floor(data.dailyTime_5/60)],
-                                    ['7 Days Ago', Math.floor(data.dailyTime_6/60)]
+                                    ['2 days Ago', Math.floor(data.dailyTime_1/60)],
+                                    ['3 days Ago', Math.floor(data.dailyTime_2/60)],
+                                    ['4 days Ago', Math.floor(data.dailyTime_3/60)],
+                                    ['5 days Ago', Math.floor(data.dailyTime_4/60)],
+                                    ['6 days Ago', Math.floor(data.dailyTime_5/60)],
+                                    ['7 days Ago', Math.floor(data.dailyTime_6/60)]
 					    ]);
 
 					    var options = {
-                            title: 'Time(minutes) spent on ' + domainName.toUpperCase() + ' in the past 7 days',
+                            title: 'Time (mins) spent on ' + domainName.toUpperCase() + ' in the past 7 days',
                             height: 250,
                             width: 750,
                                                         
@@ -244,18 +240,25 @@ function displayBasicLineGraph(domainName) {
                               domainName: domainName };
 			$.ajax({
                 type:'GET',
-                url:'https://desktab.me/ListedSite/GetASiteTimeHistory',
+                url:'https://desktab.me/ListedSite/GetATimeHistory',
                 data: graphData,
-                success: function( data ) {
+                success: function(timeHistory) {
                     var graph = new google.visualization.arrayToDataTable([
-                        ['Day', 'Time Spent'],
-                        ['Yesterday', Math.floor(data.dailyTime_0/60)],
-                        ['2 Days Ago', Math.floor(data.dailyTime_1/60)],
-                        ['3 Days Ago', Math.floor(data.dailyTime_2/60)],
-                        ['4 Days Ago', Math.floor(data.dailyTime_3/60)],
-                        ['5 Days Ago', Math.floor(data.dailyTime_4/60)],
-                        ['6 Days Ago', Math.floor(data.dailyTime_5/60)],
-                        ['7 Days Ago', Math.floor(data.dailyTime_6/60)]
+                        ['Day', 'Active Time', 'Idle Time'],
+                        ['Yesterday', Math.floor(timeHistory[0].dailyTime_0/60), 
+                            Math.floor(timeHistory[1].idleTime_0/60)],
+                        ['2 days Ago', Math.floor(timeHistory[0].dailyTime_1/60),
+                            Math.floor(timeHistory[1].idleTime_1/60)],
+                        ['3 days Ago', Math.floor(timeHistory[0].dailyTime_2/60),
+                            Math.floor(timeHistory[1].idleTime_2/60)],
+                        ['4 days Ago', Math.floor(timeHistory[0].dailyTime_3/60),
+                            Math.floor(timeHistory[1].idleTime_3/60)],
+                        ['5 days Ago', Math.floor(timeHistory[0].dailyTime_4/60),
+                            Math.floor(timeHistory[1].idleTime_4/60)],
+                        ['6 days Ago', Math.floor(timeHistory[0].dailyTime_5/60),
+                            Math.floor(timeHistory[1].idleTime_5/60)],
+                        ['7 days Ago', Math.floor(timeHistory[0].dailyTime_6/60),
+                            Math.floor(timeHistory[1].idleTime_6/60)]
 				    ]);
 
                     var options = {
@@ -306,7 +309,7 @@ function displayOverallStatsBarGraph() {
 			  			[data[i].domainName, Math.floor(data[i].dailyTime/60)]]);
 			  		}
 					var options = {
-				  		title: 'Time Spent on Each Flagged Website',
+				  		title: 'Time spent today',
 				  		height: 250,
                         width: 750,
 				  		orientation: 'horizontal',

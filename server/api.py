@@ -578,6 +578,58 @@ class GetIdleTimeHistories(Resource):
         except Exception as e:
             return { 'error': str(e) }
 
+class GetATimeHistory(Resource):
+    def get(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('username', type=str, help='Owner of IdleTimeHistory')
+            parser.add_argument('domainName', type=str, help='Domain to block')
+            args = parser.parse_args()
+
+            _username = args['username']
+            _domainName = args['domainName']
+
+            conn = mysql.connect()
+
+            cursor = conn.cursor()
+            cursor.callproc('getIdleTimeHistory', (_username, _domainName))
+            data = cursor.fetchone()
+
+            time_history = []
+            idle_time_history = { 'owner': data[0],
+                                  'domainName': data[1],
+                                  'idleTime_0': data[2],
+                                  'idleTime_1': data[3],
+                                  'idleTime_2': data[4],
+                                  'idleTime_3': data[5],
+                                  'idleTime_4': data[6],
+                                  'idleTime_5': data[7],
+                                  'idleTime_6': data[8] }
+
+            cursor.close()
+            cursor = conn.cursor()
+            cursor.callproc('getSiteTimeHistory', (_username, _domainName))
+            data = cursor.fetchone()
+
+            site_time_history = { 'owner': data[0],
+                                  'domainName': data[1],
+                                  'dailyTime_0': data[2],
+                                  'dailyTime_1': data[3],
+                                  'dailyTime_2': data[4],
+                                  'dailyTime_3': data[5],
+                                  'dailyTime_4': data[6],
+                                  'dailyTime_5': data[7],
+                                  'dailyTime_6': data[8] }
+
+            time_history.append(site_time_history)
+            time_history.append(idle_time_history)
+
+            return time_history
+
+        except Exception as e:
+            return { 'error': str(e) }
+
+
 class UpdateIdleTime(Resource):
     def post(self):
         try:
@@ -742,6 +794,7 @@ api.add_resource(EditListedSite, '/ListedSite/EditListedSite')
 api.add_resource(DeleteListedSite, '/ListedSite/DeleteListedSite')
 api.add_resource(GetASiteTimeHistory, '/ListedSite/GetASiteTimeHistory')
 api.add_resource(GetAnIdleTimeHistory, '/ListedSite/GetAnIdleTimeHistory')
+api.add_resource(GetATimeHistory, '/ListedSite/GetATimeHistory')
 api.add_resource(GetListedSites, '/ListedSite/GetListedSites')
 api.add_resource(GetSiteTimeHistories, '/ListedSite/GetSiteTimeHistories')
 api.add_resource(GetIdleTimeHistories, '/ListedSite/GetIdleTimeHistories')
