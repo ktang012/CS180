@@ -87,17 +87,6 @@ function sendUpdatesToServer() {
     }
 }
 
-function mockSend() {
-    var siteInfo = { username: 'lejit158@gmail.com',
-                     domainName: 'www.reddit.com',
-                     idleTime: 10000 };
-    $.ajax({
-        type: 'POST',
-        url: 'https://desktab.me/ListedSite/UpdateIdleTime',
-        data: siteInfo
-    });               
-}
-
 function pickTrackingMethod(userInfo, idleCounter, idleConstant, nowIdle) {
     if (idleCounter <= idleConstant && !nowIdle) {
         // User is considered active
