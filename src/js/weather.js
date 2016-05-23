@@ -6,13 +6,20 @@
 $(document).ready(function () {
     verifyGeolocation();
     loadSettings();
+    $('#weather_switch').hide();
     $('#weather_input_location').hide();
+    
     $('#weather_location').hover(function() {
         $('#weather_input_location').show();
+        $('#weather_switch').show();
     });
+    
     $('#weather_input_location').mouseout(function() {
         $('#weather_input_location').hide();
+        $('#weather_switch').hide();
     });
+    
+    
     $('#weather_onoff').change(function() {
         chrome.storage.sync.get('set_location', function(data) {
             var result = data.set_location;
