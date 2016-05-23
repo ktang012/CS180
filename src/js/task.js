@@ -23,15 +23,18 @@ function loadTasks(userInfo) {
             var deleteButtons = new Array();
             var crossButtons = new Array();                     
             var taskHtml = '';
+            
+            var currentDate = new Date();
+            console.log(currentDate.getUTCDate());
+                      
             for (var i = 0; i < tasks.length; ++i) {
                 var taskDescription = tasks[i].description;
                 var taskDeadline = '';
-                
+                var taskDate = new Date(tasks[i].deadline);
                 if (tasks[i].deadline.toUpperCase() == 'NONE') {
                     taskDeadline = 'N/A';
                 }
                 else {
-                    var taskDate = new Date(tasks[i].deadline);
                     taskDeadline += monthName[taskDate.getUTCMonth()];
                     taskDeadline += ' ';
                     taskDeadline += taskDate.getUTCDate();
@@ -43,19 +46,37 @@ function loadTasks(userInfo) {
                 var deleteId = 'delete_' + tasks[i].taskid.toString(); // for delete button
                 var crossId = 'cross_' + tasks[i].taskid.toString(); // for (un)crossing a task
                 
+				if (currentDate.getUTCDate() === taskDate.getUTCDate() &&
+				    currentDate.getUTCMonth() === taskDate.getUTCMonth() &&
+				    currentDate.getUTCFullYear() === taskDate.getUTCFullYear()) {
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: red;"> Due: ' + taskDeadline + '</span> </p><br/>';
+				}
+				else if (currentDate.getUTCDate() + 1 <= taskDate.getUTCDate() && 
+				         taskDate.getUTCDate() <= currentDate.getUTCDate() + 3 &&
+				         currentDate.getUTCMonth() === taskDate.getUTCMonth() &&
+				         currentDate.getUTCFullYear() === taskDate.getUTCFullYear()) {
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: orange;"> Due: ' + taskDeadline + '</span> </p><br/>';
+				}
+				else if (currentDate > taskDate) {
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: #848484;"> Due: ' + taskDeadline + '</span> </p><br/>';
+				    console.log("LOL");
+				}
+				else {
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: #006400;"> Due: ' + taskDeadline + '</span> </p><br/>';
+				}
 				
-                taskHtml += '<li style="border-bottom: 1px solid #ddd;"> Due: ' + taskDeadline + '<br/>';
+                //taskHtml += '<li style="border-bottom: 1px solid #ddd;"> Due: ' + taskDeadline + '<br/>';
 
                 // This is terrible, I'm sorry
                 if (taskStatus === 1) {
                     var crossFlag = '_isCrossedOut';
                     crossId += crossFlag;
                     taskHtml += '<a id=' + crossId + ' style="text-decorations:none; color:inherit;">';
-                    taskHtml += '<s>' + taskDescription + '</s></a></li>';
+                    taskHtml += '<s><span style="color: #848484;">' + taskDescription + '</s></span></a></li>';
                 }
                 else {
                     taskHtml += '<a id=' + crossId + ' style="text-decorations:none; color:inherit;">';
-                    taskHtml += taskDescription + '</a></li>';
+                    taskHtml += '<span style="color: #848484;">' + taskDescription + '</a></span></li>';
                 }
                 
                 taskHtml += '<li><button id=' + deleteId + ' style="width:60px; height:40px;" class="delete_button"> Delete </button></li>';
