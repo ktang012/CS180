@@ -30,8 +30,8 @@ $(document).ready(function() {
             userInfo.username == null) {    
             return;
         }
-        
-        var idleConstant = 2; // User is idle after two minutes of no activity         
+      
+        var idleConstant = 180; // User is idle after three minutes of no activity         
         var idleCounter = 0;
         var nowIdle = false;
         
@@ -158,7 +158,7 @@ function clientFetchMostRecentListedSite(userInfo) {
         success: function(site) {
             if (!(site.domainName === null || site.owner === null ||
                   site.domainName === undefined || site.owner === undefined)) {
-                console.log("ClientFetch:", site);
+                // console.log("ClientFetch:", site);
                 sessionSetListedSite(site);
             }
         },
@@ -174,7 +174,7 @@ function clientGetListedSiteAndUpdate() {
           listedSite.owner === undefined || listedSite.domainName === undefined)) {
         listedSite.checkTimeCap();
         listedSite.idleTime += 1;
-        console.log("ClientGet:", listedSite);
+        // console.log("ClientGet:", listedSite);
         sessionSetListedSite(listedSite);
     }
 }
@@ -191,7 +191,7 @@ function serverGetListedSiteAndUpdate(userInfo, idleCounter) {
                                             site.isBlocked, site.timeCap, site.idleTime);
             if (!(listedSite.domainName === null || listedSite.owner === null ||
                   listedSite.domainName === undefined || listedSite.owner === undefined)) {
-                console.log("ServerGet:", listedSite);
+                // console.log("ServerGet:", listedSite);
                 monitorSite(listedSite);
             }
         },
