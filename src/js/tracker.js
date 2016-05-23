@@ -26,47 +26,161 @@ $(document).ready(function() {
         var userInfo = { username: data.username,
                          domainName: document.domain };
         
+        if (userInfo.username == '' || userInfo.username == undefined || 
+            userInfo.username == null) {    
+            return;
+        }
         
-                                          
-        var activityStatus = 0;
-        $(document).mousemove(function(event) {
-            console.log("lol");
+        var idleConstant = 2; // User is idle after two minutes of no activity         
+        var idleCounter = 0;
+        var nowIdle = false;
+        
+        // When there's an activity, check if user is considered idle
+        // If the user resumes activity, we update our site object on the server
+        // And go back to using the server
+        $(document).on('mousemove keypress', function(event) {
+            if (idleCounter >= idleConstant) {
+                sendUpdatesToServer();
+            }
+            idleCounter = 0;
         });
-                         
-        window.onbeforeunload = function() {
-            windowClose(userInfo, activityStatus);
-            //return false;
-        };
         
-        getListedSiteAndUpdate(userInfo);
+        // When we first become idle, set flag to grab most recent listed site object
+        // After or before we're considered idle, set it back
         setInterval(function() {
-            getListedSiteAndUpdate(userInfo);
+            ++idleCounter;
+            if (idleCounter == idleConstant) {
+                nowIdle = true;
+            }
+            else if (nowIdle) {
+                nowIdle = false;
+            }   
+        }, 1050);
+        
+        
+        // In the event the user closes the window/tab, send most recent
+        // client based listed site object to server IF idle
+        $(window).on('beforeunload', function() {
+            sendUpdatesToServer();
+        });
+        
+        pickTrackingMethod(userInfo, idleCounter, idleConstant, nowIdle);
+        setInterval(function() {
+            pickTrackingMethod(userInfo, idleCounter, idleConstant, nowIdle);
         }, 1000);
     });
 });
 
-function windowClose(userInfo, u) {
-    console.log("userInfo:", userInfo);
+function sendUpdatesToServer() {
+    var listedSite = sessionGetListedSite();
+    if (!(listedSite.owner === null || listedSite.owner === undefined ||
+        listedSite.domainName === null || listedSite.domainName === undefined)) {
+        var siteInfo = { username: listedSite.owner,
+                         domainName: listedSite.domainName,
+                         idleTime: listedSite.idleTime };
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: 'https://desktab.me/ListedSite/UpdateIdleTime',
+            data: siteInfo
+        });
+    }
 }
 
-function idleUserDetection(idleStatus, idleTime) {
-    $(this).mousemove(function(e) {
-        var storedIdleTime = idleTime;
-        idleTime = 0;
-        idleStatus = false;
-        // Get last updated ListedSite object R from server
-        // Compare the two, update R on server according to current listedSite  
-        // Resume sending requests to server
-    });
+function mockSend() {
+    var siteInfo = { username: 'lejit158@gmail.com',
+                     domainName: 'www.reddit.com',
+                     idleTime: 10000 };
+    $.ajax({
+        type: 'POST',
+        url: 'https://desktab.me/ListedSite/UpdateIdleTime',
+        data: siteInfo
+    });               
+}
+
+function pickTrackingMethod(userInfo, idleCounter, idleConstant, nowIdle) {
+    if (idleCounter <= idleConstant && !nowIdle) {
+        // User is considered active
+        serverGetListedSiteAndUpdate(userInfo);
+    }
+    else {
+        // User is considered idle
+        if (nowIdle) { // Must always execute this first
+            clientFetchMostRecentListedSite(userInfo);
+        }
+        else {
+            clientGetListedSiteAndUpdate();
+        }
+    }
+}
+
+// Client API methods
+// Probably don't need to store all this, but more can be done
+// in the future with these methods
+function sessionSetListedSite(site) {
+    sessionStorage.setItem('owner', site.owner);
+    sessionStorage.setItem('domainName', site.domainName);
+    sessionStorage.setItem('dailyTime', site.dailyTime);
+    sessionStorage.setItem('blockedTime', site.blockedTime);
+    sessionStorage.setItem('isBlocked', site.isBlocked);
+    sessionStorage.setItem('timeCap', site.timeCap);
+    sessionStorage.setItem('idleTime', site.idleTime);
+}
+
+function sessionGetListedSite() {
+    var owner = sessionStorage.getItem('owner');
+    var domainName = sessionStorage.getItem('domainName');
+    var dailyTime = parseInt(sessionStorage.getItem('dailyTime'), 10);
+    var blockedTime = parseInt(sessionStorage.getItem('blockedTime'), 10);
     
-    $(this).keypress(function(e) {
-        var storedIdleTime = idleTime;
-        idleTime = 0;
-        idleStatus = false;
+    var isBlocked = (sessionStorage.getItem('isBlocked'));
+    if (isBlocked == '1') {
+        isBlocked = 1;
+    }
+    else {
+        isBlocked = 0;
+    }
+    
+    var timeCap = parseInt(sessionStorage.getItem('timeCap'), 10);
+    var idleTime = parseInt(sessionStorage.getItem('idleTime'), 10);
+    
+    var listedSite = new ListedSite(owner, domainName, dailyTime, 
+                                    blockedTime, isBlocked, timeCap, idleTime);
+    return listedSite;
+}
+
+// Client methods -- used when user is idle
+function clientFetchMostRecentListedSite(userInfo) {
+    $.ajax({
+        type: 'GET',
+        url: 'https://desktab.me/ListedSite/GetAListedSite',
+        data: userInfo,
+        success: function(site) {
+            if (!(site.domainName === null || site.owner === null ||
+                  site.domainName === undefined || site.owner === undefined)) {
+                console.log("ClientFetch:", site);
+                sessionSetListedSite(site);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(textStatus, errorThrown);
+        }
     });
 }
 
-function getListedSiteAndUpdate(userInfo) {
+function clientGetListedSiteAndUpdate() {
+    var listedSite = sessionGetListedSite();
+    if (!(listedSite.owner === null || listedSite.domainName === null ||
+          listedSite.owner === undefined || listedSite.domainName === undefined)) {
+        listedSite.checkTimeCap();
+        listedSite.idleTime += 1;
+        console.log("ClientGet:", listedSite);
+        sessionSetListedSite(listedSite);
+    }
+}
+
+// Server methods
+function serverGetListedSiteAndUpdate(userInfo, idleCounter) {
     $.ajax({
         type: 'GET',
         url: 'https://desktab.me/ListedSite/GetAListedSite',
@@ -74,8 +188,10 @@ function getListedSiteAndUpdate(userInfo) {
         success: function(site) {
             var listedSite = new ListedSite(site.owner, site.domainName,
                                             site.dailyTime, site.blockedTime,
-                                            site.isBlocked, site.timeCap);
-            if (!(listedSite.domainName === undefined || listedSite.owner === undefined)) {
+                                            site.isBlocked, site.timeCap, site.idleTime);
+            if (!(listedSite.domainName === null || listedSite.owner === null ||
+                  listedSite.domainName === undefined || listedSite.owner === undefined)) {
+                console.log("ServerGet:", listedSite);
                 monitorSite(listedSite);
             }
         },
@@ -131,15 +247,16 @@ function blockSite() {
     $(body).html(html);
 }
 
-// ListedSite and SiteTimeHistory objects (or similar objects) should be used in the 
-// UI of the extension for consistency
-function ListedSite(owner, domainName, dailyTime, blockedTime, isBlocked, timeCap) {
+// Object used in sessionStorage and HTTP requests
+function ListedSite(owner, domainName, dailyTime, blockedTime, isBlocked, 
+                    timeCap, idleTime) {
     this.owner = owner;
     this.domainName = domainName;
     this.dailyTime = dailyTime;
     this.blockedTime = blockedTime;
     this.isBlocked = isBlocked;
     this.timeCap = timeCap;
+    this.idleTime = idleTime;
     
     this.checkTimeCap = function() {
         if (this.isBlocked && this.blockedTime >= this.timeCap) {
@@ -147,36 +264,3 @@ function ListedSite(owner, domainName, dailyTime, blockedTime, isBlocked, timeCa
         }
     };
 }
-
-// dailyTimeHistory an array of integers (seconds) of maximum size X
-// dailyTimeHistory[0] gets yesterday's dailyTime
-// dailyTimeHistory[1] gets the day before yesterday's dailyTime, etc...
-function SiteTimeHistory(owner, domainName, dailyTimeHistory) {
-    this.owner = owner;
-    this.domainName = domainName;
-    this.dailyTimeHistory = dailyTimeHistory
-
-    // Some helper functions for manipulating data
-    this.getTotalDailyTime = function() {
-        var totalTime = 0;
-        for (var i = 0; i < this.dailyTimeHistory.length; ++i) {
-            totalTime += this.dailyTimeHistory[i];
-        }
-        return totalTime;
-    };
-    
-    this.getNAverageDailyTime = function(n) {
-        if (n > this.dailyTimeHistory.length) {
-            n = this.dailyTimeHistory.length;
-        }
-        var totalTime = 0;
-        for (var i = 0; i < n; ++i) {
-            totalTime += this.dailyTimeHistory[i];
-        }
-        return (totalTime / n);
-    
-    };
-}
-
-
-
