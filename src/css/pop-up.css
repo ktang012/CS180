@@ -23,19 +23,37 @@ opacity: 0.98;
  
 }
 
+div.overlay-dialogue_calendar {
+ background:transparent;
+ position: fixed;
+ display: none;
+ width: 500px;
+ height: 290px;
+ 
+ top: 70px;
+ left: 10px;
+ 
+ padding:10px;
+ 
+ overflow-y: auto;
+ animation: START 0.3s ease-in-out;
+ 
+}
+
+
 div.overlay-dialogue_event_add {
 
-
+border-radius:5px;
  padding: 10px;
  opacity: 0.98;
 
  position: absolute;
  display: none;
- height: 222px;
+ height: 249px;
  width: 222px;
  
  top: 10px;
- left: 10px;
+ left: 234px;
  
  background: #F4F2F2;
  
@@ -239,6 +257,11 @@ input[type=checkbox].smoosh_read_email_2:checked ~ div.overlay-dialogue_read_ema
  z-index: 5005;
 }
 
+input[type=checkbox].smoosh_calendar:checked ~ div.overlay-dialogue_calendar {
+ display: block;
+ z-index: 5005;
+}
+
 .smoosh {
  display: none;
  line-height: 0;
@@ -331,6 +354,19 @@ input[type=checkbox].smoosh_read_email_2:checked ~ div.overlay-dialogue_read_ema
 }
 
 .smoosh_read_email_2 {
+ display: none;
+ line-height: 0;
+ margin: 0 0 0 0;
+ padding: 0 0 0 0;
+ color: transparent;
+ background: transparent;
+ border: none;
+ outline: none;
+ height: 0;
+ width: 0;
+}
+
+.smoosh_calendar {
  display: none;
  line-height: 0;
  margin: 0 0 0 0;

@@ -17,7 +17,7 @@ $(document).ready(function() {
         current = Math.floor(Math.random() * 100);
         current = current % backgrounds.length;
         header.css('background-image', backgrounds[current]);
-	    header.css('background-size', '100% 1600%');
+	    header.css('background-size', '100% 4850%');
 	    header.css('background-repeat', 'repeat');
 	    header.css('background-repeat', 'repeat');
 	}
@@ -26,6 +26,6 @@ $(document).ready(function() {
     setInterval(nextBackground, 180000);
 
     header.css('background-image', backgrounds[current]);	
-    header.css('background-size', '100% 1600%');
+    header.css('background-size', '100% 4850%');
     header.css('background-repeat', 'repeat');
 });
