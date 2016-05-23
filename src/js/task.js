@@ -25,7 +25,6 @@ function loadTasks(userInfo) {
             var taskHtml = '';
             
             var currentDate = new Date();
-            console.log(currentDate.getUTCDate());
                       
             for (var i = 0; i < tasks.length; ++i) {
                 var taskDescription = tasks[i].description;
@@ -49,20 +48,19 @@ function loadTasks(userInfo) {
 				if (currentDate.getUTCDate() === taskDate.getUTCDate() &&
 				    currentDate.getUTCMonth() === taskDate.getUTCMonth() &&
 				    currentDate.getUTCFullYear() === taskDate.getUTCFullYear()) {
-				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: red;"> Due: ' + taskDeadline + '</span> </p><br/>';
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><br/><br/><p><span style="color: red;"> Due: ' + taskDeadline + '</span> </p><br/>';
 				}
 				else if (currentDate.getUTCDate() + 1 <= taskDate.getUTCDate() && 
 				         taskDate.getUTCDate() <= currentDate.getUTCDate() + 3 &&
 				         currentDate.getUTCMonth() === taskDate.getUTCMonth() &&
 				         currentDate.getUTCFullYear() === taskDate.getUTCFullYear()) {
-				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: orange;"> Due: ' + taskDeadline + '</span> </p><br/>';
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><br/><br/><p><span style="color: orange;"> Due: ' + taskDeadline + '</span> </p><br/>';
 				}
 				else if (currentDate > taskDate) {
-				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: #848484;"> Due: ' + taskDeadline + '</span> </p><br/>';
-				    console.log("LOL");
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><br/><br/><p><span style="color: #848484;"> Due: ' + taskDeadline + '</span> </p><br/>';
 				}
 				else {
-				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><p><span style="color: #006400;"> Due: ' + taskDeadline + '</span> </p><br/>';
+				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><br/><br/><p><span style="color: #006400;"> Due: ' + taskDeadline + '</span> </p><br/>';
 				}
 				
                 //taskHtml += '<li style="border-bottom: 1px solid #ddd;"> Due: ' + taskDeadline + '<br/>';
@@ -79,7 +77,7 @@ function loadTasks(userInfo) {
                     taskHtml += '<span style="color: #848484;">' + taskDescription + '</a></span></li>';
                 }
                 
-                taskHtml += '<li><button id=' + deleteId + ' style="width:60px; height:40px;" class="delete_button"> Delete </button></li>';
+                taskHtml += '<li><br/><br/><button id=' + deleteId + ' style="width:60px; height:40px;" class="delete_button"> Delete </button></li>';
 
                 deleteButtons.push(deleteId);
                 crossButtons.push(crossId);

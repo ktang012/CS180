@@ -1,12 +1,15 @@
 $(document).ready(function() {
 	chrome.identity.getProfileUserInfo(function(identity) {
-        console.log("Logged in as", identity.email)
+	    console.log("Logged in as", identity.email)
+	    if (identity.email == null || identity.email == '') {
+	        return;
+	    }
+        $('#email_ui').click(send_auth);
+        $("#send_email").click(send_email);
+	    $("#increment_email").click(increment_email);
+        $("#decrement_email").click(decrement_email);
+        checkEmail();
     });
-    $('#email_ui').click(send_auth);
-    $("#send_email").click(send_email);
-	$("#increment_email").click(increment_email);
-    $("#decrement_email").click(decrement_email);
-    checkEmail();
 });
 
 function send_auth() {
@@ -118,8 +121,8 @@ function checkEmail() {
 					emailHtml += '<td> <button id='+ DeleteID + ' class="delete_button" width="15%"> Delete </button></td>'; 
 					emailHtml += '</tr>';
                     emailHtml += '<tr> <td>Date: ' + emailDate + '</td></tr>';
-                    emailHtml += '<tr style="border-bottom: 1px solid #ddd; margin-bottom: 5px;"> <td>Subject: ' + emailSubject + '</td></tr>';
-				    emailHtml += '<tr> <td> ==========================<br /> </td></tr>';
+                    emailHtml += '<tr style="border-bottom: 3px solid #ddd; margin-bottom: 5px;"> <td>Subject: ' + emailSubject + '</td></tr>';
+				    emailHtml += '<tr> <td> <br /> </td></tr>';
 					ViewButton.push(ViewID);
 					DeleteButton.push(DeleteID);
 

@@ -5,31 +5,31 @@ function displayQuote() {
 
 	if ( day == 1)
 	{
-		document.write("Is Monday, go back to work.");
+		document.write("If each day is a gift, I would like to know where I can return Mondays.");
 	}
 	if ( day == 2)
 	{
-		document.write("Is Tuesday, you are still at work.");
+		document.write("Tuesday is better than Monday.");
 	}
 	if ( day == 3)
 	{
-		document.write("Is Wednesday, finish half week!");
+		document.write("It's Wednesday, we're halfway there!");
 	}
 	if ( day == 4)
 	{
-		document.write("Is Thursday, one more day to go!");
+		document.write("Throwback Thursdays!");
 	}
 	if ( day == 5)
 	{
-		document.write("Is Friday, Friday!");
+		document.write("TGIF.");
 	}
 	if ( day == 6)
 	{
-		document.write("Is Saturday, dont wake up, go back to sleep...");
+		document.write("Dear Saturday, I love you.");
 	}
 	if ( day == 0)
 	{
-		document.write("Is Sunday, leave me alone, this is my last day.");
+		document.write("Sunday Funday!");
 	}
 	
 }
