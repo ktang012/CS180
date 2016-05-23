@@ -1,4 +1,4 @@
-  $(document).ready(function () {          
+$(document).ready(function () {          
 	  // Create calendar.
 	  $("#jqxWidget").jqxCalendar({ enableTooltips: false, width: 220, height: 220});
 	  
@@ -7,7 +7,9 @@
 			var userInfo = { 
 				username: data.email
 			};
-			loadEvents(userInfo);
+			$('#view_event').click(function() {
+				loadEvents(userInfo);
+			});
 			$('#save_event').click(function() {
 				addEvent(data.email);
 			});
@@ -24,7 +26,12 @@
     var tmpD = new Date();
 	var eventInfo = input.elements["event"].value;
 	var y = tmpD.getFullYear();
-	var m = tmpD.getMonth();
+	if(tmpD.getMonth()+ 1 < 11 && tmpD.getMonth() != 0){
+		var m = tmpD.getMonth()+1;
+	}
+	else{
+		var m = tmpD.getMonth();
+	}
 	var d = input.elements["d"].value;
 	console.log(eventInfo);
     if (eventInfo == '') {
@@ -48,8 +55,9 @@
 				//$("#jqxWidget").jqxCalendar({ enableTooltips: false, width: 220, height: 220});
 				loadEvents(email);
 				$('#form_add_event')[0].reset();
-				SpecialEvent(userInfo);
-				$("#jqxWidget").jqxCalendar('refresh');
+				SpecialEvent(eventInput);
+				var sD = $("#jqxWidget").jqxCalendar('specialDates');
+				$("#jqxWidget").jqxCalendar({ specialDates: sD });
 		},
 		error: function(errorThrown) {
 			//alert(textStatus, errorThrown);
@@ -65,6 +73,7 @@ function SpecialEvent(userInfo) {
         url: 'https://desktab.me/Calendar/GetSpecialEvents',
         data: userInfo,
         success: function(Event) {	
+			$("#jqxWidget").jqxCalendar("specialDates", []);
 
 			for (var i = 0; i < Event.length; ++i){
 				var  strdate = Event[i].date.toString();
@@ -104,11 +113,11 @@ function loadEvents (userInfo){
                 var eventDescription = Event[i].description;
 				var eventSTR = new Date(Event[i].date);
 				var eventDate = '';
-				eventDate += monthName[eventSTR.getMonth()];
+				eventDate += monthName[eventSTR.getUTCMonth()];
 				eventDate += ', ';
-				eventDate += eventSTR.getDay();
+				eventDate += eventSTR.getUTCDate();
 				eventDate += ' ';
-				eventDate += eventSTR.getFullYear();
+				eventDate += eventSTR.getUTCFullYear();
 				var eventID = Event[i].event_id;
 
 				var deleteId = 'delete_' + Event[i].event_id.toString();
@@ -137,6 +146,9 @@ function loadEvents (userInfo){
                 $('#' + deleteButtons[i]).click(function() {
                     deleteEvent(this.id.replace(/\D/g, ''));
                 });
+		SpecialEvent(userInfo);
+		var sD = $("#jqxWidget").jqxCalendar('specialDates');
+		$("#jqxWidget").jqxCalendar({ specialDates: sD });
 			}
 				
 		},
@@ -162,6 +174,9 @@ function deleteEvent(event_id) {
                     username: identity.email
                 };
                 loadEvents(userInfo); 
+		SpecialEvent(userInfo);
+		var sD = $("#jqxWidget").jqxCalendar('specialDates');
+		$("#jqxWidget").jqxCalendar({ specialDates: sD });
             });
 			console.log(data);
         },

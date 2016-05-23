@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	chrome.identity.getProfileUserInfo(function(token) {
-		if (token.email == '' || token.email == undefined || token.email == null) {s	    
+		if (token.email == '' || token.email == undefined || token.email == null) {	    
 		    chrome.identity.getAuthToken({'interactive': true}); 
 		}
 		else {

@@ -33,9 +33,9 @@ function loadTasks(userInfo) {
                 else {
                     var taskDate = new Date(tasks[i].deadline);
                     taskDeadline += monthName[taskDate.getUTCMonth()];
-                    taskDeadline += ', ';
-                    taskDeadline += taskDate.getUTCDate();
                     taskDeadline += ' ';
+                    taskDeadline += taskDate.getUTCDate();
+                    taskDeadline += ', ';
                     taskDeadline += taskDate.getUTCFullYear();
                 }
                 
