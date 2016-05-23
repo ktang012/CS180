@@ -4,6 +4,8 @@ $(document).ready(function() {
     
     // We want a slight delay such that the page is loaded before
     // our popup is loaded so we can register events properly
+    // A better solution would be to listen to tracker.js and see
+    // if the document is loaded
     setTimeout(function() {
         chrome.tabs.query({
                 active: true,
@@ -52,15 +54,6 @@ function addCurrentSite(currentDomain) {
                 else {
                     var alertString = "Added the following site: " + currentDomain;
                     alert(alertString);
-                    chrome.tabs.query({
-                        active: true,
-                        currentWindow: true
-                        },
-                        function(tabs) {
-                            chrome.tabs.sendMessage(
-                                tabs[0].id,
-                                { from: 'add_site', method: 'refreshPage' }); 
-                    });
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {

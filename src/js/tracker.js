@@ -1,6 +1,5 @@
 $(document).ready(function() {
-    // Set up listeners for messages
-    
+    // Set up listeners for messages  
     // Sends the popup the domainName when the popup is loaded
     chrome.runtime.onMessage.addListener(function(message, sender, response) {
         // Verify if onMessage is from add_site and method
@@ -11,16 +10,7 @@ $(document).ready(function() {
             };
             response(currentSite);
         }
-    });
-    
-    // Refreshes page when a site gets added so we can start tracking
-    chrome.runtime.onMessage.addListener(function(message, sender, response) {
-        // Verify if onMessage is from add_site and method
-        // It should be sent when add_site is loaded
-        if (message.from == 'add_site' && message.method == 'refreshPage') {
-            location.reload();
-        }
-    });     
+    });    
     
     chrome.storage.sync.get("username", function(data) {
         var userInfo = { username: data.username,

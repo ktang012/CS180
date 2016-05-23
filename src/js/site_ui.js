@@ -206,19 +206,18 @@ function displayBasicPiGraph(domainName) {
 					    var graph = new google.visualization.arrayToDataTable([
                                     ['Day', 'Time Spent'	],
                                     ['Yesterday', Math.floor(data.dailyTime_0/60)],
-                                    ['2 days Ago', Math.floor(data.dailyTime_1/60)],
-                                    ['3 days Ago', Math.floor(data.dailyTime_2/60)],
-                                    ['4 days Ago', Math.floor(data.dailyTime_3/60)],
-                                    ['5 days Ago', Math.floor(data.dailyTime_4/60)],
-                                    ['6 days Ago', Math.floor(data.dailyTime_5/60)],
-                                    ['7 days Ago', Math.floor(data.dailyTime_6/60)]
+                                    ['2 days ago', Math.floor(data.dailyTime_1/60)],
+                                    ['3 days ago', Math.floor(data.dailyTime_2/60)],
+                                    ['4 days ago', Math.floor(data.dailyTime_3/60)],
+                                    ['5 days ago', Math.floor(data.dailyTime_4/60)],
+                                    ['6 days ago', Math.floor(data.dailyTime_5/60)],
+                                    ['7 days ago', Math.floor(data.dailyTime_6/60)]
 					    ]);
 
 					    var options = {
                             title: 'Time (mins) spent on ' + domainName.toUpperCase() + ' in the past 7 days',
                             height: 250,
-                            width: 750,
-                                                        
+                            width: 750,                              
 					    };
 
                         var chart = new google.visualization.PieChart(document.getElementById('draw_graph'));
