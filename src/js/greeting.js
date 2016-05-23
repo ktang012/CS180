@@ -8,14 +8,18 @@ function greeting() {
 			document.write("Good morning");
 		}
 	
-	if (h >= 12)
+	else if (h >= 12)
 	{
-		if ( h < 20)
+		if ( h < 18 )
+		{
+			document.write("Good Afternoon");
+		}
+		else if ( h > 18)
 		{
 			document.write("Good evening");
 		}
 		
-		if( h >= 20)
+		else if( h >= 22)
 		{
 			document.write("Good night");
 		}

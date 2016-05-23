@@ -1,21 +1,27 @@
-$( document ).ready(function() {
+$(document).ready(function() {
 	chrome.identity.getProfileUserInfo(function(token) {
-		if (token.email === '') {
-			return;		
+		if (token.email == '' || token.email == undefined || token.email == null) {s	    
+		    chrome.identity.getAuthToken({'interactive': true}); 
 		}
-		var login = {
-			username: token.email
-		};
-		$.ajax({
-			type: 'POST',
-			url: 'http://cs180.no-ip.info/CreateUser',
-			data: login,
-			success: function(data) {
-					// console.log(data);
-			},
-			error: function() {
-				alert('error username');
-			}
-		});
+		else {
+		    var login = {
+			    username: token.email
+		    };
+		
+		    // Store username for use in content scripts...
+		    chrome.storage.sync.set(login)
+		
+		    $.ajax({
+			    type: 'POST',
+			    url: 'https://desktab.me/CreateUser',
+			    data: login,
+			    success: function(data) {
+
+			    },
+			    error: function() {
+                    alert('error username');
+			    }
+		    });
+		}
 	});
 });
