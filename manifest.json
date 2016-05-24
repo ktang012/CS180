@@ -17,12 +17,14 @@
   ],
   "browser_action": {
       "default_title": "New Tab",
-      "default_icon": "src/img/icon.png",
+      "default_icon": "src/img/icon128.png",
       "default_popup": "src/dropdown.html"
   },
   "chrome_url_overrides" : {
     "newtab": "src/newtab.html"
   },
+  "icons" : {
+  	"128": "src/img/icon128.png"},
   "content_scripts": [
     {
         "matches": ["*://*/*"],
