@@ -45,15 +45,17 @@ function loadTasks(userInfo) {
                 var deleteId = 'delete_' + tasks[i].taskid.toString(); // for delete button
                 var crossId = 'cross_' + tasks[i].taskid.toString(); // for (un)crossing a task
                 
-				if (currentDate.getUTCDate() === taskDate.getUTCDate() &&
-				    currentDate.getUTCMonth() === taskDate.getUTCMonth() &&
-				    currentDate.getUTCFullYear() === taskDate.getUTCFullYear()) {
+                console.log(currentDate.getDate(), taskDate.getDate());
+                
+				if (currentDate.getDate() === taskDate.getUTCDate() &&
+				    currentDate.getMonth() === taskDate.getMonth() &&
+				    currentDate.getFullYear() === taskDate.getFullYear()) {
 				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><br/><br/><p><span style="color: red;"> Due: ' + taskDeadline + '</span> </p><br/>';
 				}
-				else if (currentDate.getUTCDate() + 1 <= taskDate.getUTCDate() && 
-				         taskDate.getUTCDate() <= currentDate.getUTCDate() + 3 &&
-				         currentDate.getUTCMonth() === taskDate.getUTCMonth() &&
-				         currentDate.getUTCFullYear() === taskDate.getUTCFullYear()) {
+				else if (currentDate.getDate() + 1 <= taskDate.getUTCDate() && 
+				         taskDate.getDate() <= currentDate.getDate() + 3 &&
+				         currentDate.getMonth() === taskDate.getUTCMonth() &&
+				         currentDate.getFullYear() === taskDate.getFullYear()) {
 				    taskHtml += '<li style="border-bottom: 1px solid #ddd;"><br/><br/><p><span style="color: orange;"> Due: ' + taskDeadline + '</span> </p><br/>';
 				}
 				else if (currentDate > taskDate) {
