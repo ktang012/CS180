@@ -1,6 +1,6 @@
 $(document).ready(function () {          
 	  // Create calendar.
-	  $("#jqxWidget").jqxCalendar({ enableTooltips: false, width: 220, height: 220});
+	  $("#jqxWidget").jqxCalendar({ enableTooltips: true, width: 220, height: 220});
 	  
 	  
 		chrome.identity.getProfileUserInfo(function(data) {
@@ -74,9 +74,9 @@ function SpecialEvent(userInfo) {
         data: userInfo,
         success: function(Event) {	
 			$("#jqxWidget").jqxCalendar("specialDates", []);
-
 			for (var i = 0; i < Event.length; ++i){
 				var  strdate = Event[i].date.toString();
+				var count = 2;
 				//console.log(Event[i]);
 				var split = strdate.split("-");
 				var dates = split[2];
@@ -84,7 +84,18 @@ function SpecialEvent(userInfo) {
 				//console.log(parseInt(dates,10));
 				newDate.setDate(dates);
 				//console.log(parseInt(dates,10));
-				$("#jqxWidget").jqxCalendar('addSpecialDate', newDate, '', "");
+				var STR = '1. ' + Event[i].description + ' ';
+				console.log(STR);
+				for (var j = 1; j < Event.length; ++j){
+					var  strdate2 = Event[j].date.toString();
+					var split2 = strdate2.split("-");
+					var dates2 = split2[2];
+					if(dates == dates2){
+						STR = STR + count + '. ' + Event[j].description + ' ';
+						count++;
+					}
+				}
+				$("#jqxWidget").jqxCalendar('addSpecialDate', newDate, '', STR);
 				$("#jqxWidget").jqxCalendar('refresh');
 			}
 			
