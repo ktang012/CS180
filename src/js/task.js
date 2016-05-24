@@ -45,7 +45,7 @@ function loadTasks(userInfo) {
                 var deleteId = 'delete_' + tasks[i].taskid.toString(); // for delete button
                 var crossId = 'cross_' + tasks[i].taskid.toString(); // for (un)crossing a task
                 
-                console.log(currentDate.getDate(), taskDate.getDate());
+                //console.log(currentDate.getDate(), taskDate.getDate());
                 
 				if (currentDate.getDate() === taskDate.getUTCDate() &&
 				    currentDate.getMonth() === taskDate.getMonth() &&
