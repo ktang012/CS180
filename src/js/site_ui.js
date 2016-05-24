@@ -1,6 +1,7 @@
 $(document).ready(function() {
     google.charts.load('current', {packages: ['corechart']});
     chrome.identity.getProfileUserInfo(function(data) {
+        displayOverallStatsBarGraph();
         var userInfo = { 
             username: data.email
         };
