@@ -761,7 +761,8 @@ class GetSpecialEvents(Resource):
             event_list = []
 
             for i in data:
-                event = { 'date': str(i[0]) }
+                event = { 'date': str(i[0]),
+                          'description': i[1] }
                 event_list.append(event)
 
             return event_list
