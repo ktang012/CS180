@@ -1,11 +1,13 @@
 $(document).ready(function() {
-    displayOverallStatsBarGraph();
+    google.charts.load('current', {packages: ['corechart']});
     chrome.identity.getProfileUserInfo(function(data) {
         var userInfo = { 
             username: data.email
         };
-        loadListedSites(userInfo);
-        google.charts.load('current', {packages: ['corechart']});
+        $('#site_button').click(function() {
+        		loadListedSites(userInfo);
+        });
+        
         $('#toggle_graphs').click(function() {
             displayOverallStatsBarGraph();
         });
@@ -226,7 +228,8 @@ function displayBasicPiGraph(domainName) {
 					    var options = {
                             title: 'Time (mins) spent on ' + domainName.toUpperCase() + ' in the past 7 days',
                             height: 250,
-                            width: 750,                              
+                            width: 750,
+                            backgroundColor: '#F4F2F2',                           
 					    };
 
                         var chart = new google.visualization.PieChart(document.getElementById('draw_graph'));
@@ -273,6 +276,7 @@ function displayBasicLineGraph(domainName) {
                         title: 'Time spent on ' + domainName.toUpperCase() + ' in the past 7 days',
                         height: 250,
                         width: 750,
+                        backgroundColor: '#F4F2F2',
                         vAxis: {
                             title: 'Time (minutes)'
                         },
@@ -319,7 +323,8 @@ function displayOverallStatsBarGraph() {
 					var options = {
 				  		title: 'Time spent today',
 				  		height: 250,
-                        width: 750,
+              width: 750,
+              backgroundColor: '#F4F2F2',
 				  		orientation: 'horizontal',
 				  		animation:{
 				  			startup: true,
@@ -345,4 +350,3 @@ function displayOverallStatsBarGraph() {
         }); 
 	}
 }
-
