@@ -31,7 +31,7 @@ function loadListedSites(userInfo) {
             
             var siteHtml = '';
             siteHtml += '<tr>';
-            siteHtml += '<td> Status </td>';
+            siteHtml += '<td> Blocked </td>';
             siteHtml += '<td> Domain Name </td>';
             siteHtml += '<td> Daily Time </td>';
             siteHtml += '<td> Time Cap (minutes) </td>';                
