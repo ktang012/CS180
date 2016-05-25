@@ -1,3 +1,5 @@
-# Chrome Extension Name
+# DeskTab
+A Chrome extension built for organization and productivity.
 
-Look at development branch for progress
+## Documentation
+TBA

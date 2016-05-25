@@ -1,6 +1,7 @@
 $(document).ready(function() {
     google.charts.load('current', {packages: ['corechart']});
     chrome.identity.getProfileUserInfo(function(data) {
+        displayOverallStatsBarGraph();
         var userInfo = { 
             username: data.email
         };
@@ -31,7 +32,7 @@ function loadListedSites(userInfo) {
             
             var siteHtml = '';
             siteHtml += '<tr>';
-            siteHtml += '<td> Status </td>';
+            siteHtml += '<td> Blocked </td>';
             siteHtml += '<td> Domain Name </td>';
             siteHtml += '<td> Daily Time </td>';
             siteHtml += '<td> Time Cap (minutes) </td>';                
