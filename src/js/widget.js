@@ -85,15 +85,17 @@ function SpecialEvent(userInfo) {
 				newDate.setDate(dates);
 				//console.log(parseInt(dates,10));
 				var STR = '1. ' + Event[i].description + ' ';
-				for (var j = 1; j < Event.length; ++j){
-					var  strdate2 = Event[j].date.toString();
-					var split2 = strdate2.split("-");
-					var dates2 = split2[2];
-					if(dates == dates2){
-						STR = STR + count + '. ' + Event[j].description + ' ';
-						count++;
-					}
-				}
+				    for (var j = 1; j < Event.length; ++j){
+				    if(i != j) {
+					    var  strdate2 = Event[j].date.toString();
+					    var split2 = strdate2.split("-");
+					    var dates2 = split2[2];
+					    if(dates == dates2){
+						    STR = STR + count + '. ' + Event[j].description + ' ';
+						    count++;
+					    }
+				    }
+				    }
 				$("#jqxWidget").jqxCalendar('addSpecialDate', newDate, '', STR);
 				$("#jqxWidget").jqxCalendar('refresh');
 			}
