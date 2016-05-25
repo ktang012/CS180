@@ -52,6 +52,14 @@ function send_email() {
 		success: function(data) {
 			console.log(email.authorize);
 			console.log(data);
+			chrome.identity.getProfileUserInfo(function(identity) {
+				if (identity.email == null || identity.email == '') {
+					return;
+				}
+				if(email.to == identity.email){
+					checkEmail();
+				}
+			});
 			if (data == '"Email Sent"') {
                 alert("Email successfully sent!");
 			}
@@ -185,10 +193,15 @@ function UpdateView (View_ID){
 		success: function (data, textStatus, jqXHR )
 		{
 			emailHtml = '';
+			var monthName = ['January', 'February', 'March', 'April', 
+                             'May', 'June', 'July', 'August',
+                             'September', 'October', 'November', 'December']; 
+			var date = new Date(data.date);
+			var emailDate = monthName[date.getUTCMonth()] + ' ' + date.getUTCDate() + ', ' + date.getUTCFullYear();
 			emailHtml += '<tr> <td width="80%">From: ' + data.from;
 			/*emailHtml += '<td> <button id='+ ViewID + ' class="task_buttons" width="15%"> View </button></td>';*/ 
 			emailHtml += '</tr>';
-            emailHtml += '<tr> <td>Date: ' + data.date + '</td></tr>';
+            emailHtml += '<tr> <td>Date: ' + emailDate + '</td></tr>';
             emailHtml += '<tr style="border-bottom: 1px solid #ddd; margin-bottom: 5px;"> <td>Subject: ' + data.subject + '</td></tr>';
             emailHtml += '<tr> <td>Message:' + data.message + '</td></tr>';
 			$('#individual_email').html(emailHtml);
